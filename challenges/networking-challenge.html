@@ -3,83 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Network Configuration Challenge</title>
+    <title>Network Configuration Challenge - Ascended</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../styles/main.css">
 </head>
-<body>
-    <template id="networking-challenge-template">
-        <div class="puzzle-container">
-            <div class="mb-4">
-                <h4 class="text-lg font-bold mb-2">Build the Network Topology</h4>
-                <p class="text-gray-300 mb-4">
-                    Connect the devices to create a functional network. 
-                    Drag cables between ports to establish connections.
-                </p>
+<body class="bg-gray-900 text-white font-mono">
+    <!-- Header -->
+    <header class="bg-gray-800 border-b border-cyan-500 p-4">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <button onclick="window.location.href='../index.html'" 
+                        class="bg-gray-600 hover:bg-gray-700 px-3 py-2 rounded">
+                    <i class="bi bi-arrow-left"></i> Back to Lab
+                </button>
+                <h1 class="text-2xl font-bold text-blue-400">
+                    <i class="bi bi-router"></i> Network Configuration Lab
+                </h1>
             </div>
+            <div class="flex items-center space-x-4">
+                <button id="inventory-btn" class="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded">
+                    <i class="bi bi-bag"></i> Inventory
+                </button>
+                <button id="progress-btn" class="bg-green-600 hover:bg-green-700 px-3 py-2 rounded">
+                    <i class="bi bi-graph-up"></i> Progress
+                </button>
+                <button id="hint-btn" class="bg-yellow-600 hover:bg-yellow-700 px-3 py-2 rounded">
+                    <i class="bi bi-lightbulb"></i> Hints
+                </button>
+            </div>
+        </div>
+    </header>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <div class="lg:col-span-2">
-                    <div id="network-canvas" class="bg-gray-900 border border-gray-600 rounded p-4 h-96 relative">
-                        <!-- Network devices will be dynamically inserted here -->
-                    </div>
-                    
-                    <div class="flex space-x-2 mt-4">
-                        <button onclick="NetworkingChallenge.checkConfiguration()" 
-                                class="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded">
-                            <i class="bi bi-check-circle"></i> Test Network
-                        </button>
-                        <button onclick="NetworkingChallenge.resetNetwork()" 
-                                class="bg-gray-600 hover:bg-gray-700 px-3 py-2 rounded">
-                            <i class="bi bi-arrow-clockwise"></i> Reset
-                        </button>
-                    </div>
-                </div>
+    <!-- Main Challenge Area -->
+    <div class="flex h-screen">
+        <!-- Challenge Content -->
+        <div id="challenge-container" class="flex-1 p-6">
+            <div id="challenge-content">
+                <!-- Dynamic challenge content will be loaded here -->
+            </div>
+        </div>
 
-                <div>
-                    <h5 class="font-bold mb-2">Available Cables</h5>
-                    <div id="cable-inventory" class="space-y-2 mb-4">
-                        <div class="cable-item bg-blue-600 p-2 rounded cursor-pointer" data-cable="ethernet">
-                            <i class="bi bi-ethernet"></i> Ethernet Cable
+        <!-- Side Panel -->
+        <div id="side-panel" class="w-80 bg-gray-800 border-l border-gray-600 p-4 hidden">
+            <!-- Dynamic content based on selected panel -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../static/js/inventory.js"></script>
+    <script src="../static/js/progress.js"></script>
+    <script src="../static/js/hints.js"></script>
+    <script src="../static/js/networking-challenge.js"></script>
+    <script>
+        // Initialize challenge when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const titleElement = { textContent: '' };
+            const contentElement = document.getElementById('challenge-content');
+            
+            NetworkingChallenge.load(titleElement, contentElement);
+            
+            // Setup panel toggles
+            document.getElementById('inventory-btn').addEventListener('click', () => {
+                togglePanel('inventory');
+            });
+            document.getElementById('progress-btn').addEventListener('click', () => {
+                togglePanel('progress');
+            });
+            document.getElementById('hint-btn').addEventListener('click', () => {
+                togglePanel('hints');
+            });
+        });
+
+        function togglePanel(panelType) {
+            const sidePanel = document.getElementById('side-panel');
+            const currentPanel = sidePanel.dataset.panel;
+
+            if (currentPanel === panelType && !sidePanel.classList.contains('hidden')) {
+                sidePanel.classList.add('hidden');
+                return;
+            }
+
+            sidePanel.dataset.panel = panelType;
+            sidePanel.classList.remove('hidden');
+
+            switch(panelType) {
+                case 'inventory':
+                    Inventory.render(sidePanel);
+                    break;
+                case 'progress':
+                    Progress.render(sidePanel);
+                    break;
+                case 'hints':
+                    Hints.render(sidePanel);
+                    break;
+            }
+        }
+
+        // Mock game object for challenge completion
+        window.game = {
+            completeChallenge: (challengeType, reward) => {
+                Progress.addCompletion(challengeType);
+                if (reward.item) {
+                    Inventory.addItem(reward.item);
+                }
+                
+                // Show completion message and redirect
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-green-600 text-white p-4 rounded shadow-lg z-50';
+                notification.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="bi bi-check-circle mr-2"></i>
+                        <div>
+                            <div class="font-bold">Challenge Complete!</div>
+                            <div class="text-sm">${reward.message}</div>
                         </div>
-                        <div class="cable-item bg-green-600 p-2 rounded cursor-pointer" data-cable="fiber">
-                            <i class="bi bi-wifi"></i> Fiber Cable
-                        </div>
                     </div>
+                `;
+                document.body.appendChild(notification);
 
-                    <h5 class="font-bold mb-2">Network Status</h5>
-                    <div id="network-status" class="bg-gray-800 p-3 rounded text-sm">
-                        <div class="text-yellow-400">⚠️ Network not configured</div>
-                        <div class="text-gray-400 mt-2">Connect all devices to test connectivity.</div>
-                    </div>
-
-                    <h5 class="font-bold mb-2 mt-4">Requirements</h5>
-                    <ul class="text-sm text-gray-400 space-y-1">
-                        <li>• Connect laptops to switch</li>
-                        <li>• Connect switch to router</li>
-                        <li>• Connect server to switch</li>
-                        <li>• Router provides internet access</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <!-- Network Device Template -->
-    <template id="network-device-template">
-        <div class="network-device absolute bg-gray-700 border border-gray-500 rounded p-2 text-center" 
-             style="width: 80px;" data-device="">
-            <div class="text-2xl mb-1 device-icon"><!-- Device icon --></div>
-            <div class="text-xs font-bold device-name"><!-- Device name --></div>
-            <div class="ports mt-1">
-                <!-- Ports will be dynamically inserted here -->
-            </div>
-        </div>
-    </template>
-
-    <!-- Port Template -->
-    <template id="port-template">
-        <div class="port w-3 h-3 bg-gray-600 border border-gray-400 rounded-full inline-block m-0.5 cursor-pointer"
-             data-device="" data-port="" style="position: relative;" title="">
-        </div>
-    </template>
+                setTimeout(() => {
+                    window.location.href = '../index.html';
+                }, 3000);
+            }
+        };
+    </script>
 </body>
 </html>

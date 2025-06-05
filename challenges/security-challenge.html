@@ -3,115 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Security Console Challenge</title>
+    <title>Security Console Challenge - Ascended</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../styles/main.css">
 </head>
-<body>
-    <!-- Cipher Challenge Template -->
-    <template id="cipher-challenge-template">
-        <div>
-            <h4 class="text-lg font-bold mb-2">Decode the Encrypted Message</h4>
-            <p class="text-gray-300 mb-4">
-                A suspicious encrypted message was intercepted. Decode it to reveal the hidden information.
-            </p>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div>
-                    <h5 class="font-bold mb-2">Encrypted Message</h5>
-                    <div class="bg-red-900 border border-red-600 p-4 rounded font-mono text-red-200">
-                        URYYB JBEYQ! GUVF VF N FRPERG ZRFFNTR.
-                    </div>
-
-                    <div class="mt-4">
-                        <h5 class="font-bold mb-2">Cipher Type</h5>
-                        <select id="cipher-type" class="w-full bg-gray-700 border border-gray-600 rounded p-2">
-                            <option value="">Select cipher type...</option>
-                            <option value="caesar">Caesar Cipher</option>
-                            <option value="atbash">Atbash Cipher</option>
-                            <option value="reverse">Reverse Cipher</option>
-                        </select>
-                    </div>
-
-                    <div class="mt-4">
-                        <h5 class="font-bold mb-2">Shift Value (for Caesar)</h5>
-                        <input type="range" id="shift-value" min="1" max="25" value="13" 
-                               class="w-full" oninput="SecurityChallenge.updateShiftDisplay()">
-                        <div class="flex justify-between text-sm text-gray-400 mt-1">
-                            <span>1</span>
-                            <span id="shift-display">13</span>
-                            <span>25</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h5 class="font-bold mb-2">Decoded Message</h5>
-                    <div id="decoded-output" class="bg-gray-900 border border-gray-600 p-4 rounded font-mono min-h-[100px]">
-                        <span class="text-gray-500">Select a cipher type and adjust settings...</span>
-                    </div>
-
-                    <div class="mt-4">
-                        <button onclick="SecurityChallenge.decodeCipher()" 
-                                class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded mr-2">
-                            <i class="bi bi-unlock"></i> Decode
-                        </button>
-                        <button onclick="SecurityChallenge.submitDecoded()" 
-                                class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">
-                            <i class="bi bi-check-circle"></i> Submit
-                        </button>
-                    </div>
-
-                    <div id="cipher-feedback" class="mt-4 text-sm"></div>
-                </div>
+<body class="bg-gray-900 text-white font-mono">
+    <!-- Header -->
+    <header class="bg-gray-800 border-b border-cyan-500 p-4">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <button onclick="window.location.href='../index.html'" 
+                        class="bg-gray-600 hover:bg-gray-700 px-3 py-2 rounded">
+                    <i class="bi bi-arrow-left"></i> Back to Lab
+                </button>
+                <h1 class="text-2xl font-bold text-red-400">
+                    <i class="bi bi-shield-lock"></i> Security Console - Cyber Defense
+                </h1>
             </div>
-        </div>
-    </template>
-
-    <!-- Threat Detection Challenge Template -->
-    <template id="threat-challenge-template">
-        <div>
-            <h4 class="text-lg font-bold mb-2">Identify Security Threats</h4>
-            <p class="text-gray-300 mb-4">
-                Review the following files and emails. Mark suspicious items as threats.
-            </p>
-
-            <div class="space-y-3" id="threats-container">
-                <!-- Threat items will be dynamically inserted here -->
-            </div>
-
-            <div class="mt-6">
-                <button onclick="SecurityChallenge.submitThreatAnalysis()" 
-                        class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
-                    <i class="bi bi-shield-check"></i> Submit Analysis
+            <div class="flex items-center space-x-4">
+                <button id="inventory-btn" class="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded">
+                    <i class="bi bi-bag"></i> Inventory
+                </button>
+                <button id="progress-btn" class="bg-green-600 hover:bg-green-700 px-3 py-2 rounded">
+                    <i class="bi bi-graph-up"></i> Progress
+                </button>
+                <button id="hint-btn" class="bg-yellow-600 hover:bg-yellow-700 px-3 py-2 rounded">
+                    <i class="bi bi-lightbulb"></i> Hints
                 </button>
             </div>
-
-            <div id="threat-results" class="mt-4"></div>
         </div>
-    </template>
+    </header>
 
-    <!-- Individual Threat Item Template -->
-    <template id="threat-item-template">
-        <div class="threat-item bg-gray-800 border border-gray-600 p-4 rounded" data-threat="">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    <i class="threat-icon text-2xl mr-3"></i>
-                    <div>
-                        <div class="font-mono text-sm threat-content"><!-- Threat content --></div>
-                        <div class="text-xs text-gray-400">Risk Level: 
-                            <span class="threat-risk"><!-- Risk level --></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex space-x-2">
-                    <button class="threat-btn bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">
-                        Threat
-                    </button>
-                    <button class="safe-btn bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm">
-                        Safe
-                    </button>
-                </div>
+    <!-- Main Challenge Area -->
+    <div class="flex h-screen">
+        <!-- Challenge Content -->
+        <div id="challenge-container" class="flex-1 p-6">
+            <div id="challenge-content">
+                <!-- Dynamic challenge content will be loaded here -->
             </div>
         </div>
-    </template>
+
+        <!-- Side Panel -->
+        <div id="side-panel" class="w-80 bg-gray-800 border-l border-gray-600 p-4 hidden">
+            <!-- Dynamic content based on selected panel -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../static/js/inventory.js"></script>
+    <script src="../static/js/progress.js"></script>
+    <script src="../static/js/hints.js"></script>
+    <script src="../static/js/security-challenge.js"></script>
+    <script>
+        // Initialize challenge when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const titleElement = { textContent: '' };
+            const contentElement = document.getElementById('challenge-content');
+            
+            SecurityChallenge.load(titleElement, contentElement);
+            
+            // Setup panel toggles
+            document.getElementById('inventory-btn').addEventListener('click', () => {
+                togglePanel('inventory');
+            });
+            document.getElementById('progress-btn').addEventListener('click', () => {
+                togglePanel('progress');
+            });
+            document.getElementById('hint-btn').addEventListener('click', () => {
+                togglePanel('hints');
+            });
+        });
+
+        function togglePanel(panelType) {
+            const sidePanel = document.getElementById('side-panel');
+            const currentPanel = sidePanel.dataset.panel;
+
+            if (currentPanel === panelType && !sidePanel.classList.contains('hidden')) {
+                sidePanel.classList.add('hidden');
+                return;
+            }
+
+            sidePanel.dataset.panel = panelType;
+            sidePanel.classList.remove('hidden');
+
+            switch(panelType) {
+                case 'inventory':
+                    Inventory.render(sidePanel);
+                    break;
+                case 'progress':
+                    Progress.render(sidePanel);
+                    break;
+                case 'hints':
+                    Hints.render(sidePanel);
+                    break;
+            }
+        }
+
+        // Mock game object for challenge completion
+        window.game = {
+            completeChallenge: (challengeType, reward) => {
+                Progress.addCompletion(challengeType);
+                if (reward.item) {
+                    Inventory.addItem(reward.item);
+                }
+                
+                // Show completion message and redirect
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-green-600 text-white p-4 rounded shadow-lg z-50';
+                notification.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="bi bi-check-circle mr-2"></i>
+                        <div>
+                            <div class="font-bold">Challenge Complete!</div>
+                            <div class="text-sm">${reward.message}</div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    window.location.href = '../index.html';
+                }, 3000);
+            }
+        };
+    </script>
 </body>
 </html>

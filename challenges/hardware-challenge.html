@@ -3,97 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hardware Diagnostics Challenge</title>
+    <title>Hardware Diagnostics Challenge - Ascended</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../styles/main.css">
 </head>
-<body>
-    <template id="hardware-challenge-template">
-        <div class="puzzle-container">
-            <div class="mb-4">
-                <h4 class="text-lg font-bold mb-2">System Diagnostics & Repair</h4>
-                <p class="text-gray-300 mb-4">
-                    The computer won't boot properly. Diagnose and fix the hardware issues.
-                </p>
+<body class="bg-gray-900 text-white font-mono">
+    <!-- Header -->
+    <header class="bg-gray-800 border-b border-cyan-500 p-4">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <button onclick="window.location.href='../index.html'" 
+                        class="bg-gray-600 hover:bg-gray-700 px-3 py-2 rounded">
+                    <i class="bi bi-arrow-left"></i> Back to Lab
+                </button>
+                <h1 class="text-2xl font-bold text-green-400">
+                    <i class="bi bi-motherboard"></i> Hardware Diagnostics Lab
+                </h1>
             </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div>
-                    <h5 class="font-bold mb-3">Computer Motherboard</h5>
-                    <div id="motherboard" class="bg-gradient-to-br from-green-900 to-green-800 border-2 border-green-600 rounded-lg p-6 relative h-80">
-                        <!-- Dynamic motherboard components will be inserted here -->
-                    </div>
-                    
-                    <div class="mt-4 flex space-x-2">
-                        <button onclick="HardwareChallenge.powerOn()" 
-                                class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
-                            <i class="bi bi-power"></i> Power On
-                        </button>
-                        <button onclick="HardwareChallenge.runDiagnostics()" 
-                                class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded">
-                            <i class="bi bi-cpu"></i> Run Diagnostics
-                        </button>
-                        <button onclick="HardwareChallenge.resetSystem()" 
-                                class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded">
-                            <i class="bi bi-arrow-clockwise"></i> Reset
-                        </button>
-                    </div>
-                </div>
-
-                <div>
-                    <h5 class="font-bold mb-3">Available Components</h5>
-                    <div id="component-shelf" class="bg-gray-800 border border-gray-600 rounded p-4 mb-4">
-                        <div class="spare-component bg-gray-700 border border-gray-500 p-3 rounded mb-2 cursor-move hover:bg-gray-600"
-                             draggable="true" data-component-type="ram" data-component-id="spare-ram">
-                            <div class="flex items-center">
-                                <span class="text-2xl mr-2">🧠</span>
-                                <span class="text-sm">RAM Module</span>
-                            </div>
-                        </div>
-                        <div class="spare-component bg-gray-700 border border-gray-500 p-3 rounded mb-2 cursor-move hover:bg-gray-600"
-                             draggable="true" data-component-type="storage" data-component-id="spare-ssd">
-                            <div class="flex items-center">
-                                <span class="text-2xl mr-2">💾</span>
-                                <span class="text-sm">SSD Drive</span>
-                            </div>
-                        </div>
-                        <div class="spare-component bg-gray-700 border border-gray-500 p-3 rounded mb-2 cursor-move hover:bg-gray-600"
-                             draggable="true" data-component-type="storage" data-component-id="spare-hdd">
-                            <div class="flex items-center">
-                                <span class="text-2xl mr-2">💿</span>
-                                <span class="text-sm">HDD Drive</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h5 class="font-bold mb-3">System Status</h5>
-                    <div id="system-console" class="terminal h-40 overflow-y-auto">
-                        <div class="text-gray-400">System ready for diagnostics...</div>
-                    </div>
-
-                    <div class="mt-4">
-                        <h5 class="font-bold mb-2">Component Status</h5>
-                        <div id="component-status" class="space-y-1 text-sm">
-                            <!-- Dynamic component status will be inserted here -->
-                        </div>
-                    </div>
-                </div>
+            <div class="flex items-center space-x-4">
+                <button id="inventory-btn" class="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded">
+                    <i class="bi bi-bag"></i> Inventory
+                </button>
+                <button id="progress-btn" class="bg-green-600 hover:bg-green-700 px-3 py-2 rounded">
+                    <i class="bi bi-graph-up"></i> Progress
+                </button>
+                <button id="hint-btn" class="bg-yellow-600 hover:bg-yellow-700 px-3 py-2 rounded">
+                    <i class="bi bi-lightbulb"></i> Hints
+                </button>
             </div>
         </div>
-    </template>
+    </header>
 
-    <!-- Component Slot Template -->
-    <template id="component-slot-template">
-        <div class="component-slot absolute border-2 border-dashed border-gray-400 rounded w-12 h-8 flex items-center justify-center text-xs cursor-pointer hover:border-white"
-             data-slot="" data-component="" title="">
-            <!-- Component icon will be inserted here -->
+    <!-- Main Challenge Area -->
+    <div class="flex h-screen">
+        <!-- Challenge Content -->
+        <div id="challenge-container" class="flex-1 p-6">
+            <div id="challenge-content">
+                <!-- Dynamic challenge content will be loaded here -->
+            </div>
         </div>
-    </template>
 
-    <!-- Component Status Item Template -->
-    <template id="component-status-template">
-        <div class="flex justify-between items-center bg-gray-700 px-2 py-1 rounded">
-            <span class="component-name"><!-- Component name --></span>
-            <span class="component-status"><!-- Status --></span>
+        <!-- Side Panel -->
+        <div id="side-panel" class="w-80 bg-gray-800 border-l border-gray-600 p-4 hidden">
+            <!-- Dynamic content based on selected panel -->
         </div>
-    </template>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../static/js/inventory.js"></script>
+    <script src="../static/js/progress.js"></script>
+    <script src="../static/js/hints.js"></script>
+    <script src="../static/js/hardware-challenge.js"></script>
+    <script>
+        // Initialize challenge when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const titleElement = { textContent: '' };
+            const contentElement = document.getElementById('challenge-content');
+            
+            HardwareChallenge.load(titleElement, contentElement);
+            
+            // Setup panel toggles
+            document.getElementById('inventory-btn').addEventListener('click', () => {
+                togglePanel('inventory');
+            });
+            document.getElementById('progress-btn').addEventListener('click', () => {
+                togglePanel('progress');
+            });
+            document.getElementById('hint-btn').addEventListener('click', () => {
+                togglePanel('hints');
+            });
+        });
+
+        function togglePanel(panelType) {
+            const sidePanel = document.getElementById('side-panel');
+            const currentPanel = sidePanel.dataset.panel;
+
+            if (currentPanel === panelType && !sidePanel.classList.contains('hidden')) {
+                sidePanel.classList.add('hidden');
+                return;
+            }
+
+            sidePanel.dataset.panel = panelType;
+            sidePanel.classList.remove('hidden');
+
+            switch(panelType) {
+                case 'inventory':
+                    Inventory.render(sidePanel);
+                    break;
+                case 'progress':
+                    Progress.render(sidePanel);
+                    break;
+                case 'hints':
+                    Hints.render(sidePanel);
+                    break;
+            }
+        }
+
+        // Mock game object for challenge completion
+        window.game = {
+            completeChallenge: (challengeType, reward) => {
+                Progress.addCompletion(challengeType);
+                if (reward.item) {
+                    Inventory.addItem(reward.item);
+                }
+                
+                // Show completion message and redirect
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-green-600 text-white p-4 rounded shadow-lg z-50';
+                notification.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="bi bi-check-circle mr-2"></i>
+                        <div>
+                            <div class="font-bold">Challenge Complete!</div>
+                            <div class="text-sm">${reward.message}</div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    window.location.href = '../index.html';
+                }, 3000);
+            }
+        };
+    </script>
 </body>
 </html>
