@@ -249,8 +249,17 @@ class NetworkingChallenge {
                     const deltaX = e.clientX - startX;
                     const deltaY = e.clientY - startY;
                     
-                    const newX = Math.max(0, Math.min(initialX + deltaX, 500));
-                    const newY = Math.max(0, Math.min(initialY + deltaY, 300));
+                    // Get canvas dimensions for proper constraints
+                    const canvasRect = document.getElementById('network-canvas').getBoundingClientRect();
+                    const deviceWidth = device.offsetWidth;
+                    const deviceHeight = device.offsetHeight;
+                    
+                    // Calculate proper bounds considering device size
+                    const maxX = canvasRect.width - deviceWidth - 12; // 12px for padding
+                    const maxY = canvasRect.height - deviceHeight - 12;
+                    
+                    const newX = Math.max(6, Math.min(initialX + deltaX, maxX));
+                    const newY = Math.max(6, Math.min(initialY + deltaY, maxY));
                     
                     device.style.left = newX + 'px';
                     device.style.top = newY + 'px';
@@ -660,5 +669,34 @@ class NetworkingChallenge {
         setTimeout(() => {
             window.game.completeChallenge('networking', reward);
         }, 2000);
+    }
+
+    static updateDeviceConnections(deviceId) {
+        // Find all connections involving this device and redraw them
+        this.connections.forEach(connection => {
+            if (connection.from.device === deviceId || connection.to.device === deviceId) {
+                // Remove the old line
+                const oldLine = document.querySelector(`[data-connection="${connection.id}"]`);
+                if (oldLine) {
+                    oldLine.remove();
+                }
+                
+                // Update the connection elements to current positions
+                if (connection.from.device === deviceId) {
+                    const device = document.querySelector(`[data-device="${deviceId}"]`);
+                    const port = device.querySelector(`[data-port="${connection.from.port}"]`);
+                    connection.from.element = port;
+                }
+                
+                if (connection.to.device === deviceId) {
+                    const device = document.querySelector(`[data-device="${deviceId}"]`);
+                    const port = device.querySelector(`[data-port="${connection.to.port}"]`);
+                    connection.to.element = port;
+                }
+                
+                // Redraw the connection with new positions
+                this.drawConnection(connection);
+            }
+        });
     }
 }
