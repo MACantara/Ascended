@@ -1,51 +1,302 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="flex h-screen">
-    <!-- Minimap/Navigation -->
-    <div class="w-1/4 bg-gray-800 p-4">
-        <h3 class="text-lg font-bold mb-4">Tech Lab Map</h3>
-        <div id="room-list" class="space-y-2"></div>
-        
-        <div class="mt-6">
-            <h4 class="font-bold mb-2">Current Tools</h4>
-            <div id="quick-inventory" class="space-y-1"></div>
-        </div>
-    </div>
-    
-    <!-- Main Game Area -->
-    <div class="flex-1 p-6">
-        <div id="current-room" class="bg-gray-800 rounded-lg p-6 h-full">
-            <div id="room-content">
-                <h2 class="text-2xl font-bold mb-4">Select a room to begin</h2>
-                <p class="text-gray-400">Choose a tech domain from the map to start your challenges.</p>
+<div class="min-h-screen bg-gray-900">
+    <!-- Game Header -->
+    <div class="bg-gray-800 border-b border-gray-700 p-4">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <a href="/lab" class="text-gray-400 hover:text-white">
+                    <i class="bi bi-arrow-left"></i> Back to Lab
+                </a>
+                <h1 id="game-title" class="text-xl font-bold text-blue-400">
+                    <i class="bi bi-controller"></i> Challenge Arena
+                </h1>
+            </div>
+            
+            <!-- Game Controls -->
+            <div class="flex items-center space-x-3">
+                <button id="pause-btn" class="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-sm">
+                    <i class="bi bi-pause"></i> Pause
+                </button>
+                <button id="reset-btn" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">
+                    <i class="bi bi-arrow-clockwise"></i> Reset
+                </button>
+                <button id="hints-btn" class="bg-yellow-600 hover:bg-yellow-700 px-3 py-1 rounded text-sm">
+                    <i class="bi bi-lightbulb"></i> Hints
+                </button>
             </div>
         </div>
     </div>
-    
-    <!-- Challenge Panel -->
-    <div id="challenge-panel" class="w-1/3 bg-gray-800 p-4 hidden">
-        <div class="flex justify-between items-center mb-4">
-            <h3 id="challenge-title" class="text-lg font-bold"></h3>
-            <button id="close-challenge" class="text-gray-400 hover:text-white">
-                <i class="bi bi-x-lg"></i>
+
+    <!-- Main Game Interface -->
+    <div class="flex h-screen">
+        <!-- Game Area -->
+        <div class="flex-1 p-6">
+            <div id="game-arena" class="bg-gray-800 rounded-lg p-6 h-full overflow-auto">
+                <div id="challenge-content">
+                    <div class="text-center py-20">
+                        <i class="bi bi-hourglass-split text-6xl text-blue-400 mb-4 animate-spin"></i>
+                        <h2 class="text-2xl font-bold mb-4">Loading Challenge...</h2>
+                        <p class="text-gray-400">Preparing your interactive experience</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Game Sidebar -->
+        <div class="w-80 bg-gray-800 border-l border-gray-700 p-4">
+            <!-- Challenge Info -->
+            <div class="mb-6">
+                <h3 id="challenge-title" class="text-lg font-bold mb-2">Challenge Title</h3>
+                <div id="challenge-difficulty" class="text-sm text-gray-400 mb-3"></div>
+                <div id="challenge-description" class="text-sm text-gray-300"></div>
+            </div>
+
+            <!-- Game Stats -->
+            <div class="mb-6">
+                <h4 class="font-bold mb-3">Game Stats</h4>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Attempts:</span>
+                        <span id="attempt-count" class="text-blue-400 font-bold">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Hints Used:</span>
+                        <span id="hint-count" class="text-yellow-400 font-bold">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Time:</span>
+                        <span id="game-timer" class="text-green-400 font-bold">00:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Actions -->
+            <div class="mb-6">
+                <h4 class="font-bold mb-3">Actions</h4>
+                <div class="space-y-2">
+                    <button id="submit-btn" class="w-full bg-green-600 hover:bg-green-700 px-4 py-2 rounded font-bold">
+                        <i class="bi bi-check-circle"></i> Submit Solution
+                    </button>
+                    <button id="hint-btn" class="w-full bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded">
+                        <i class="bi bi-lightbulb"></i> Get Hint
+                    </button>
+                    <button id="skip-btn" class="w-full bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded">
+                        <i class="bi bi-skip-forward"></i> Skip Challenge
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Tools -->
+            <div class="mb-6">
+                <h4 class="font-bold mb-3">Available Tools</h4>
+                <div id="available-tools" class="space-y-2"></div>
+            </div>
+
+            <!-- Feedback Area -->
+            <div id="feedback-area" class="mb-6"></div>
+
+            <!-- Challenge Progress -->
+            <div class="border-t border-gray-700 pt-4">
+                <h4 class="font-bold mb-3">Progress</h4>
+                <div class="bg-gray-700 rounded-full h-2 mb-2">
+                    <div id="progress-bar" class="bg-blue-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <div class="text-xs text-gray-400 text-center" id="progress-text">Ready to start</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div id="success-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-lg p-8 max-w-md w-full text-center">
+        <i class="bi bi-trophy text-6xl text-yellow-400 mb-4"></i>
+        <h3 class="text-2xl font-bold mb-4 text-green-400">Challenge Complete!</h3>
+        <div id="success-details" class="mb-6"></div>
+        <div class="flex space-x-3">
+            <button id="next-challenge-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                Next Challenge
+            </button>
+            <button id="back-to-lab-btn" class="flex-1 bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded">
+                Back to Lab
             </button>
         </div>
-        <div id="challenge-content"></div>
-        <div class="mt-4 flex space-x-2">
-            <button id="hint-btn" class="bg-yellow-600 hover:bg-yellow-700 px-3 py-1 rounded text-sm">
-                <i class="bi bi-lightbulb"></i> Hint
-            </button>
-            <button id="submit-btn" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm">
-                Submit
-            </button>
-        </div>
-        <div id="challenge-feedback" class="mt-4"></div>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/core/rooms.js') }}"></script>
 <script src="{{ url_for('static', filename='js/core/challenges.js') }}"></script>
+<script src="{{ url_for('static', filename='js/challenges/coding.js') }}"></script>
+<script>
+    // Game-specific functionality
+    class GameInterface {
+        constructor() {
+            this.timer = 0;
+            this.timerInterval = null;
+            this.attemptCount = 0;
+            this.hintCount = 0;
+            this.init();
+        }
+
+        init() {
+            this.setupGameControls();
+            this.loadChallengeFromURL();
+            this.startTimer();
+        }
+
+        setupGameControls() {
+            document.getElementById('pause-btn')?.addEventListener('click', () => this.togglePause());
+            document.getElementById('reset-btn')?.addEventListener('click', () => this.resetChallenge());
+            document.getElementById('hints-btn')?.addEventListener('click', () => this.showHintsPanel());
+            document.getElementById('skip-btn')?.addEventListener('click', () => this.skipChallenge());
+            
+            // Success modal actions
+            document.getElementById('next-challenge-btn')?.addEventListener('click', () => this.loadNextChallenge());
+            document.getElementById('back-to-lab-btn')?.addEventListener('click', () => window.location.href = '/lab');
+        }
+
+        loadChallengeFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const challengeType = urlParams.get('challenge');
+            const challengeId = urlParams.get('id');
+            
+            if (challengeType && challengeId) {
+                this.loadChallenge(challengeType, challengeId);
+            } else {
+                this.showNoChallengeMessage();
+            }
+        }
+
+        async loadChallenge(challengeType, challengeId) {
+            try {
+                const response = await fetch(`/api/challenges/${challengeType}/${challengeId}`);
+                const challengeData = await response.json();
+                
+                this.currentChallenge = challengeData;
+                this.displayChallenge(challengeData);
+                this.updateChallengeInfo(challengeData);
+                this.resetStats();
+            } catch (error) {
+                console.error('Failed to load challenge:', error);
+                this.showErrorMessage('Failed to load challenge');
+            }
+        }
+
+        displayChallenge(challengeData) {
+            const contentArea = document.getElementById('challenge-content');
+            const titleEl = document.getElementById('challenge-title');
+            
+            if (titleEl) {
+                titleEl.textContent = challengeData.title;
+            }
+
+            if (contentArea) {
+                // Load appropriate challenge renderer
+                if (challengeData.type === 'coding') {
+                    const codingChallenge = new CodingChallenge(challengeData, window.game);
+                    contentArea.innerHTML = codingChallenge.render();
+                    codingChallenge.setupGameMechanics();
+                } else {
+                    contentArea.innerHTML = this.renderGenericChallenge(challengeData);
+                }
+            }
+        }
+
+        updateChallengeInfo(challengeData) {
+            const difficultyEl = document.getElementById('challenge-difficulty');
+            const descriptionEl = document.getElementById('challenge-description');
+            
+            if (difficultyEl) {
+                difficultyEl.innerHTML = `
+                    <span class="inline-block px-2 py-1 rounded text-xs bg-${this.getDifficultyColor(challengeData.difficulty)}-600">
+                        ${challengeData.difficulty}
+                    </span>
+                `;
+            }
+            
+            if (descriptionEl) {
+                descriptionEl.textContent = challengeData.problem || challengeData.description || '';
+            }
+        }
+
+        getDifficultyColor(difficulty) {
+            const colors = {
+                'Easy': 'green',
+                'Medium': 'yellow', 
+                'Hard': 'red'
+            };
+            return colors[difficulty] || 'gray';
+        }
+
+        startTimer() {
+            this.timerInterval = setInterval(() => {
+                this.timer++;
+                this.updateTimerDisplay();
+            }, 1000);
+        }
+
+        updateTimerDisplay() {
+            const timerEl = document.getElementById('game-timer');
+            if (timerEl) {
+                const minutes = Math.floor(this.timer / 60);
+                const seconds = this.timer % 60;
+                timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        resetStats() {
+            this.timer = 0;
+            this.attemptCount = 0;
+            this.hintCount = 0;
+            this.updateStatsDisplay();
+        }
+
+        updateStatsDisplay() {
+            document.getElementById('attempt-count').textContent = this.attemptCount;
+            document.getElementById('hint-count').textContent = this.hintCount;
+            this.updateTimerDisplay();
+        }
+
+        showSuccessModal(details) {
+            const modal = document.getElementById('success-modal');
+            const detailsEl = document.getElementById('success-details');
+            
+            detailsEl.innerHTML = `
+                <div class="space-y-2 text-sm">
+                    <p><strong>Time:</strong> ${document.getElementById('game-timer').textContent}</p>
+                    <p><strong>Attempts:</strong> ${this.attemptCount}</p>
+                    <p><strong>Hints Used:</strong> ${this.hintCount}</p>
+                    ${details.reward ? `<p class="text-green-400"><strong>Reward:</strong> ${details.reward}</p>` : ''}
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+
+        showNoChallengeMessage() {
+            const contentArea = document.getElementById('challenge-content');
+            contentArea.innerHTML = `
+                <div class="text-center py-20">
+                    <i class="bi bi-exclamation-triangle text-6xl text-yellow-400 mb-4"></i>
+                    <h2 class="text-2xl font-bold mb-4">No Challenge Selected</h2>
+                    <p class="text-gray-400 mb-6">Please select a challenge from the Tech Lab to continue.</p>
+                    <a href="/lab" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded font-bold">
+                        <i class="bi bi-arrow-left"></i> Return to Lab
+                    </a>
+                </div>
+            `;
+        }
+
+        // ...existing code...
+    }
+
+    // Initialize game interface when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        window.game = new GameCore();
+        window.gameInterface = new GameInterface();
+    });
+</script>
 {% endblock %}
