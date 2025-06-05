@@ -69,7 +69,7 @@ class GameEngine {
         // Navigate to the dedicated challenge page
         const challengePages = {
             'coding': 'challenges/coding/coding-challenge.html',
-            'networking': 'challenges/networking/networking-challenge.html',
+            'networking': 'challenges/networking/build-the-network-topology-challenge.html',
             'security': 'challenges/security/security-challenge.html',
             'hardware': 'challenges/hardware/hardware-challenge.html',
             'ai': 'challenges/ai/ai-challenge.html'
