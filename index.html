@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ascended - Tech Lab Adventure</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body class="bg-gray-900 text-white font-mono">
+    <!-- Header -->
+    <header class="bg-gray-800 border-b border-cyan-500 p-4">
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-cyan-400">
+                <i class="bi bi-cpu"></i> ASCENDED Tech Lab
+            </h1>
+            <div class="flex items-center space-x-4">
+                <button id="inventory-btn" class="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded">
+                    <i class="bi bi-bag"></i> Inventory
+                </button>
+                <button id="progress-btn" class="bg-green-600 hover:bg-green-700 px-3 py-2 rounded">
+                    <i class="bi bi-graph-up"></i> Progress
+                </button>
+                <button id="hint-btn" class="bg-yellow-600 hover:bg-yellow-700 px-3 py-2 rounded">
+                    <i class="bi bi-lightbulb"></i> Hints
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Game Area -->
+    <div class="flex h-screen">
+        <!-- Lab Environment -->
+        <div id="lab-environment" class="flex-1 relative overflow-hidden">
+            <!-- Room Display -->
+            <div id="current-room" class="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 relative">
+                <!-- Default: Server Room -->
+                <div id="server-room" class="room active w-full h-full p-8">
+                    <h2 class="text-3xl font-bold text-center mb-8 text-cyan-400">Server Room</h2>
+                    <div class="grid grid-cols-2 gap-8 h-full">
+                        <!-- Interactive Elements -->
+                        <div class="space-y-4">
+                            <div class="interactable bg-gray-700 p-4 rounded border hover:border-cyan-400 cursor-pointer" data-challenge="networking">
+                                <i class="bi bi-router text-4xl text-blue-400 block mb-2"></i>
+                                <h3 class="text-xl">Network Configuration</h3>
+                                <p class="text-gray-300">Configure network topology</p>
+                            </div>
+                            <div class="interactable bg-gray-700 p-4 rounded border hover:border-cyan-400 cursor-pointer" data-challenge="hardware">
+                                <i class="bi bi-motherboard text-4xl text-green-400 block mb-2"></i>
+                                <h3 class="text-xl">Hardware Diagnostics</h3>
+                                <p class="text-gray-300">Diagnose system issues</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="interactable bg-gray-700 p-4 rounded border hover:border-cyan-400 cursor-pointer" data-challenge="coding">
+                                <i class="bi bi-code-slash text-4xl text-purple-400 block mb-2"></i>
+                                <h3 class="text-xl">Code Terminal</h3>
+                                <p class="text-gray-300">Debug and fix code</p>
+                            </div>
+                            <div class="interactable bg-gray-700 p-4 rounded border hover:border-cyan-400 cursor-pointer" data-challenge="security">
+                                <i class="bi bi-shield-lock text-4xl text-red-400 block mb-2"></i>
+                                <h3 class="text-xl">Security Console</h3>
+                                <p class="text-gray-300">Solve security challenges</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Room Navigation -->
+            <div id="room-nav" class="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+                <div class="flex space-x-2 bg-gray-800 p-2 rounded">
+                    <button class="room-btn active" data-room="server-room">
+                        <i class="bi bi-hdd-stack"></i>
+                    </button>
+                    <button class="room-btn" data-room="ai-lab" disabled>
+                        <i class="bi bi-robot"></i>
+                    </button>
+                    <button class="room-btn" data-room="dev-station" disabled>
+                        <i class="bi bi-code"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Side Panel -->
+        <div id="side-panel" class="w-80 bg-gray-800 border-l border-gray-600 p-4 hidden">
+            <!-- Dynamic content based on selected panel -->
+        </div>
+    </div>
+
+    <!-- Challenge Modal -->
+    <div id="challenge-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center h-full">
+            <div class="bg-gray-800 rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="challenge-title" class="text-2xl font-bold"></h3>
+                    <button id="close-challenge" class="text-gray-400 hover:text-white">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <div id="challenge-content">
+                    <!-- Dynamic challenge content -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/game-engine.js"></script>
+    <script src="js/inventory.js"></script>
+    <script src="js/progress.js"></script>
+    <script src="js/hints.js"></script>
+    <script src="static/js/coding-challenge.js"></script>
+    <script src="static/js/networking-challenge.js"></script>
+    <script src="static/js/security-challenge.js"></script>
+    <script src="static/js/hardware-challenge.js"></script>
+    <script src="static/js/ai-challenge.js"></script>
+</body>
+</html>
