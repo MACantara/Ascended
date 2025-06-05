@@ -5,6 +5,14 @@ class GameCore {
         this.progress = this.loadProgress();
         this.inventory = this.loadInventory();
         
+        // Game state for coding challenges
+        this.gameState = {
+            energy: 100,
+            streak: 0,
+            combo: 1,
+            debugMode: false
+        };
+        
         // Initialize managers
         this.roomManager = new RoomManager(this);
         this.challengeManager = new ChallengeManager(this);
@@ -87,6 +95,52 @@ class GameCore {
         const modal = document.getElementById('inventory-modal');
         this.inventoryManager.updateFullInventory();
         modal.classList.remove('hidden');
+    }
+
+    updateGameState(action, value = 1) {
+        switch(action) {
+            case 'correct_answer':
+                this.gameState.streak += 1;
+                this.gameState.combo = Math.min(this.gameState.combo + 0.1, 2.0);
+                this.gameState.energy = Math.min(this.gameState.energy + 10, 100);
+                break;
+            case 'wrong_answer':
+                this.gameState.streak = 0;
+                this.gameState.combo = 1;
+                this.gameState.energy = Math.max(this.gameState.energy - 15, 0);
+                break;
+            case 'use_hint':
+                this.gameState.energy = Math.max(this.gameState.energy - 5, 0);
+                break;
+        }
+        this.updateGameStateDisplay();
+    }
+
+    updateGameStateDisplay() {
+        const energyBar = document.getElementById('energy-bar');
+        const streakDisplay = document.getElementById('streak-display');
+        const comboDisplay = document.getElementById('combo-display');
+        
+        if (energyBar) {
+            energyBar.style.width = `${this.gameState.energy}%`;
+            energyBar.className = `h-full transition-all duration-300 ${
+                this.gameState.energy > 60 ? 'bg-green-500' :
+                this.gameState.energy > 30 ? 'bg-yellow-500' : 'bg-red-500'
+            }`;
+        }
+        
+        if (streakDisplay) {
+            streakDisplay.textContent = this.gameState.streak;
+            if (this.gameState.streak > 0) {
+                streakDisplay.classList.add('animate-pulse');
+            } else {
+                streakDisplay.classList.remove('animate-pulse');
+            }
+        }
+        
+        if (comboDisplay) {
+            comboDisplay.textContent = `x${this.gameState.combo.toFixed(1)}`;
+        }
     }
 }
 

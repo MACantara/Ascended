@@ -1,43 +1,64 @@
 {
   "id": "basic_loop",
-  "title": "Fix the Loop",
+  "title": "Robot Rescue Mission",
   "type": "coding",
   "difficulty": "Easy",
-  "problem": "Complete the for loop to print all numbers from 1 to 5",
-  "codeBlocks": [
-    "for (let i = 1;",
-    "i <= 5;",
-    "i++) {",
-    "console.log(i);",
-    "}",
-    "i < 5;",
-    "i--;",
-    "console.log('Hello');"
+  "gameType": "collect",
+  "story": {
+    "title": "System Core Recovery",
+    "intro": "The maintenance robot needs your help to collect system cores scattered around the server room.",
+    "objective": "Program the robot to collect all 3 cores and return to base safely!"
+  },
+  "problem": "Help the robot navigate the grid and collect all the glowing system cores. Use movement commands to guide it through the maze!",
+  "gameRules": {
+    "gridSize": "5x5",
+    "startPosition": [0, 2],
+    "collectibles": [[2, 1], [3, 3], [4, 2]],
+    "goalPosition": [4, 4],
+    "maxCommands": 15
+  },
+  "availableCommands": [
+    "move_right",
+    "move_left", 
+    "move_up",
+    "move_down",
+    "collect",
+    "if_item",
+    "repeat_3"
   ],
   "solution": [
-    "for (let i = 1;",
-    "i <= 5;", 
-    "i++) {",
-    "console.log(i);",
-    "}"
-  ],
-  "testCases": [
-    {
-      "input": "Loop execution",
-      "output": "1, 2, 3, 4, 5"
-    }
+    "move_right",
+    "move_right",
+    "move_up",
+    "collect",
+    "move_down",
+    "move_right",
+    "move_down",
+    "move_down",
+    "collect",
+    "move_up",
+    "move_right",
+    "collect",
+    "move_down",
+    "move_down"
   ],
   "hints": [
-    "A for loop needs three parts: initialization, condition, and increment",
-    "The condition should check if i is less than or equal to 5",
-    "Use i++ to increment the counter"
+    "🤖 Look at where the gems are located on the grid - plan a route that visits each one!",
+    "💡 The robot starts at the left side. Try moving right first to reach the nearest gem.",
+    "🎯 Remember to use the 'collect' command when the robot is on the same space as a gem!"
   ],
   "feedback": {
-    "correct": "Excellent! You've successfully created a working for loop.",
-    "incorrect": "Not quite right. Check the loop condition and increment statement."
+    "correct": "🎉 Outstanding! You've successfully programmed the robot to complete its mission!",
+    "incorrect": "🤔 The robot didn't collect all the cores. Check your movement sequence and try again!"
   },
   "reward": {
     "tool": "debugger",
-    "points": 10
+    "points": 15,
+    "xp": 50
+  },
+  "achievements": {
+    "efficient_route": "Complete with minimal commands",
+    "first_try": "Solve on first execution",
+    "speed_runner": "Complete in under 30 seconds"
   }
 }
