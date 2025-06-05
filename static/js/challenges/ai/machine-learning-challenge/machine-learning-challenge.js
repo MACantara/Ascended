@@ -54,6 +54,11 @@ class AIChallenge {
                 </div>
             </div>
         `;
+        
+        // Setup initial phase interactions
+        if (this.currentPhase === 'data-prep') {
+            setTimeout(() => DataPreparation.setupDragAndDrop(), 100);
+        }
     }
 
     static renderCurrentPhase() {
