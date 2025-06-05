@@ -17,6 +17,21 @@ class RoomManager {
         }
     }
 
+    // Add method to load all rooms for lab interface
+    async loadAllRooms() {
+        try {
+            const response = await fetch('/api/game/rooms');
+            if (!response.ok) {
+                throw new Error('Failed to fetch rooms');
+            }
+            const rooms = await response.json();
+            return rooms;
+        } catch (error) {
+            console.error('Failed to load all rooms:', error);
+            return [];
+        }
+    }
+
     displayRoom(roomData) {
         const roomContent = document.getElementById('room-content');
         if (!roomContent) return;
@@ -74,9 +89,27 @@ class RoomManager {
         return colors[difficulty] || 'gray';
     }
 
-    updateRoomList(rooms) {
+    async updateRoomList(rooms = null) {
         const roomList = document.getElementById('room-list');
-        if (!roomList) return;
+        if (!roomList) {
+            console.warn('Room list element not found');
+            return;
+        }
+
+        // If no rooms provided, fetch them
+        if (!rooms) {
+            rooms = await this.loadAllRooms();
+        }
+
+        if (!rooms || rooms.length === 0) {
+            roomList.innerHTML = `
+                <div class="text-center text-gray-400 p-4">
+                    <i class="bi bi-exclamation-triangle mb-2"></i>
+                    <p class="text-sm">No rooms available</p>
+                </div>
+            `;
+            return;
+        }
 
         roomList.innerHTML = '';
         rooms.forEach(room => {
@@ -96,7 +129,7 @@ class RoomManager {
                     </div>
                     ${!isUnlocked ? '<i class="bi bi-lock"></i>' : ''}
                 </div>
-                <div class="text-xs text-gray-300 mb-1">${room.description}</div>
+                <div class="text-xs text-gray-300 mb-1">${room.description || 'Explore this tech domain'}</div>
                 ${isUnlocked ? `
                     <div class="text-xs text-blue-200">
                         ${completedChallenges.count} / ${completedChallenges.total} challenges completed
