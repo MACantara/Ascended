@@ -469,6 +469,26 @@ class DataPreparation {
         return 'XLarge';
     }
 
+    static getCategoryColor(category) {
+        const colors = { 
+            image: 'blue', 
+            document: 'green', 
+            audio: 'purple', 
+            video: 'red' 
+        };
+        return colors[category] || 'gray';
+    }
+
+    static getCategoryIcon(category) {
+        const icons = { 
+            image: 'image', 
+            document: 'file-text', 
+            audio: 'music-note', 
+            video: 'camera-video' 
+        };
+        return icons[category] || 'file';
+    }
+
     static hashExtension(ext) {
         // Simple hash for extension (for ML features)
         const extensions = ['jpg', 'png', 'gif', 'pdf', 'txt', 'docx', 'mp3', 'wav', 'flac', 'mp4', 'avi', 'mkv'];
