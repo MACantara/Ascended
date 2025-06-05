@@ -70,7 +70,7 @@ class GameEngine {
             'security-cipher': 'challenges/security/cipher-decoder.html',
             'security-threats': 'challenges/security/threat-detection.html',
             'hardware': 'challenges/hardware/system-diagnostics-and-repair.html',
-            'ai': 'challenges/ai/ai-challenge.html'
+            'ai': 'challenges/ai/machine-learning.html'
         };
         
         // Handle security challenges - show selection menu
