@@ -77,12 +77,40 @@
             this.init();
         }
 
-        init() {
+        async init() {
             this.setupChallengeSelection();
-            // Wait for game to initialize before updating progress
-            setTimeout(() => {
+            // Wait for game to initialize, then load rooms and update progress
+            if (window.game) {
+                await this.loadRoomsForLab();
                 this.updateProgressSummary();
-            }, 100);
+            }
+        }
+
+        async loadRoomsForLab() {
+            try {
+                // Force room list update
+                await window.game.roomManager.updateRoomList();
+                console.log('Rooms loaded successfully');
+            } catch (error) {
+                console.error('Failed to load rooms in lab:', error);
+                this.showRoomLoadError();
+            }
+        }
+
+        showRoomLoadError() {
+            const roomList = document.getElementById('room-list');
+            if (roomList) {
+                roomList.innerHTML = `
+                    <div class="text-center text-red-400 p-4">
+                        <i class="bi bi-exclamation-triangle text-2xl mb-2"></i>
+                        <p class="text-sm mb-2">Failed to load rooms</p>
+                        <button onclick="window.labInterface.loadRoomsForLab()" 
+                                class="text-xs bg-blue-600 px-2 py-1 rounded hover:bg-blue-700">
+                            Retry
+                        </button>
+                    </div>
+                `;
+            }
         }
 
         setupChallengeSelection() {
@@ -127,14 +155,23 @@
     }
 
     // Initialize lab interface when page loads
-    document.addEventListener('DOMContentLoaded', () => {
-        window.game = new GameCore();
-        window.labInterface = new LabInterface();
+    document.addEventListener('DOMContentLoaded', async () => {
+        console.log('Lab page loading...');
         
-        // Update progress summary periodically
-        setInterval(() => {
-            window.labInterface.updateProgressSummary();
-        }, 5000);
+        // Initialize game core first
+        window.game = new GameCore();
+        
+        // Wait a bit for game to fully initialize
+        setTimeout(async () => {
+            window.labInterface = new LabInterface();
+            
+            // Update progress summary periodically
+            setInterval(() => {
+                if (window.labInterface) {
+                    window.labInterface.updateProgressSummary();
+                }
+            }, 5000);
+        }, 500);
     });
 </script>
 {% endblock %}
