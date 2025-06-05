@@ -4,12 +4,20 @@ class GameCore {
         this.currentChallenge = null;
         this.progress = this.loadProgress();
         this.inventory = this.loadInventory();
+        
+        // Initialize managers
+        this.roomManager = new RoomManager(this);
+        this.challengeManager = new ChallengeManager(this);
+        this.inventoryManager = new InventoryManager(this);
+        this.progressManager = new ProgressManager(this);
+        
         this.init();
     }
 
     init() {
         this.setupEventListeners();
         this.loadRooms();
+        this.inventoryManager.updateInventoryDisplay();
     }
 
     setupEventListeners() {
@@ -18,7 +26,7 @@ class GameCore {
         });
         
         document.getElementById('progress-btn')?.addEventListener('click', () => {
-            this.showProgress();
+            this.progressManager.showProgressModal();
         });
     }
 
@@ -49,105 +57,36 @@ class GameCore {
         try {
             const response = await fetch('/api/game/rooms');
             const rooms = await response.json();
-            this.displayRooms(rooms);
+            this.roomManager.updateRoomList(rooms);
         } catch (error) {
             console.error('Failed to load rooms:', error);
         }
     }
 
-    displayRooms(rooms) {
-        const roomList = document.getElementById('room-list');
-        if (!roomList) return;
-
-        roomList.innerHTML = '';
-        rooms.forEach(room => {
-            const isUnlocked = this.progress.unlockedRooms.includes(room.id);
-            const roomElement = document.createElement('div');
-            roomElement.className = `p-3 rounded cursor-pointer ${
-                isUnlocked ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-600 opacity-50'
-            }`;
-            roomElement.innerHTML = `
-                <i class="bi bi-${room.icon}"></i>
-                <span class="ml-2">${room.name}</span>
-                ${!isUnlocked ? '<i class="bi bi-lock float-right"></i>' : ''}
-            `;
-            
-            if (isUnlocked) {
-                roomElement.addEventListener('click', () => this.enterRoom(room.id));
-            }
-            
-            roomList.appendChild(roomElement);
-        });
+    // Fixed: Add missing startChallenge method
+    startChallenge(challengeType, challengeId) {
+        this.challengeManager.startChallenge(challengeType, challengeId);
     }
 
-    async enterRoom(roomId) {
-        try {
-            const response = await fetch(`/api/game/room/${roomId}`);
-            const roomData = await response.json();
-            this.currentRoom = roomData;
-            this.displayRoom(roomData);
-        } catch (error) {
-            console.error('Failed to load room:', error);
+    completeChallenge(challengeId) {
+        // Determine challenge type from ID (simple approach)
+        const challengeType = challengeId.split('_')[0];
+        this.progressManager.completeChallenge(challengeId, challengeType);
+        
+        // Refresh room display to show completion
+        if (this.currentRoom) {
+            this.roomManager.displayRoom(this.currentRoom);
         }
     }
 
-    displayRoom(roomData) {
-        const roomContent = document.getElementById('room-content');
-        if (!roomContent) return;
-
-        roomContent.innerHTML = `
-            <h2 class="text-3xl font-bold mb-4">
-                <i class="bi bi-${roomData.icon}"></i> ${roomData.name}
-            </h2>
-            <p class="text-gray-300 mb-6">${roomData.description}</p>
-            <div class="grid md:grid-cols-2 gap-4">
-                ${roomData.challenges.map(challenge => `
-                    <div class="challenge-card bg-gray-700 p-4 rounded-lg cursor-pointer hover:bg-gray-600" 
-                         data-challenge="${challenge.id}" data-type="${challenge.type}">
-                        <h4 class="font-bold mb-2">${challenge.title}</h4>
-                        <p class="text-sm text-gray-400 mb-2">${challenge.description}</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs text-blue-400">Difficulty: ${challenge.difficulty}</span>
-                            ${this.progress.completedChallenges.includes(challenge.id) ? 
-                                '<i class="bi bi-check-circle text-green-400"></i>' : ''}
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-
-        // Add click listeners to challenges
-        roomContent.querySelectorAll('.challenge-card').forEach(card => {
-            card.addEventListener('click', () => {
-                const challengeId = card.dataset.challenge;
-                const challengeType = card.dataset.type;
-                this.startChallenge(challengeType, challengeId);
-            });
-        });
+    addToInventory(toolId) {
+        this.inventoryManager.addTool(toolId);
     }
 
     showInventory() {
         const modal = document.getElementById('inventory-modal');
-        const itemsContainer = document.getElementById('inventory-items');
-        
-        itemsContainer.innerHTML = this.inventory.length ? 
-            this.inventory.map(item => `
-                <div class="flex items-center p-2 bg-gray-700 rounded">
-                    <i class="bi bi-${item.icon} mr-3"></i>
-                    <div>
-                        <div class="font-bold">${item.name}</div>
-                        <div class="text-sm text-gray-400">${item.description}</div>
-                    </div>
-                </div>
-            `).join('') : 
-            '<p class="text-gray-400">Your inventory is empty. Complete challenges to earn tools!</p>';
-        
+        this.inventoryManager.updateFullInventory();
         modal.classList.remove('hidden');
-    }
-
-    showProgress() {
-        // Implementation for progress modal
-        console.log('Progress:', this.progress);
     }
 }
 
