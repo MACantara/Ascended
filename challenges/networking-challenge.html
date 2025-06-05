@@ -7,6 +7,211 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../styles/main.css">
+    <style>
+        /* Network-specific animations and effects */
+        @keyframes drawLine {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.6);
+            }
+        }
+        
+        @keyframes data-flow {
+            0% {
+                stroke-dashoffset: 12;
+            }
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        .network-device {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .network-device:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .network-port {
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .network-port:hover {
+            animation: pulse-glow 1s infinite;
+        }
+        
+        .network-port.connecting {
+            animation: pulse-glow 0.8s infinite;
+        }
+        
+        .connection-line {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .connection-line:hover {
+            stroke-width: 6;
+            filter: url(#glow) drop-shadow(0 0 10px currentColor);
+        }
+        
+        .cable-item {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cable-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .cable-item:hover::before {
+            left: 100%;
+        }
+        
+        .grid-bg {
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            width: 100%;
+            height: 100%;
+            animation: grid-move 20s linear infinite;
+        }
+        
+        @keyframes grid-move {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(20px, 20px);
+            }
+        }
+        
+        .device-icon {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-3px);
+            }
+        }
+        
+        /* Fiber optic data animation */
+        .fiber-data {
+            stroke-dasharray: 8 4;
+            animation: data-flow 1s linear infinite;
+        }
+        
+        /* Port indicator states */
+        .port-indicator {
+            transition: all 0.3s ease;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .port-active .port-indicator {
+            background: #10b981 !important;
+            box-shadow: 
+                inset 0 1px 2px rgba(0, 0, 0, 0.3),
+                0 0 8px rgba(16, 185, 129, 0.6);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+        
+        /* Enhanced button effects */
+        .btn-enhanced {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-enhanced::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-enhanced:active::after {
+            width: 300px;
+            height: 300px;
+        }
+        
+        /* Status panel enhancements */
+        .status-panel {
+            backdrop-filter: blur(10px);
+            background: rgba(31, 41, 55, 0.8);
+        }
+        
+        /* Requirement checklist animations */
+        .requirement-item {
+            transition: all 0.3s ease;
+        }
+        
+        .requirement-item.completed {
+            transform: translateX(5px);
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid #10b981;
+        }
+        
+        /* Loading state for network test */
+        .network-testing {
+            position: relative;
+        }
+        
+        .network-testing::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 40%, rgba(59, 130, 246, 0.1) 50%, transparent 60%);
+            animation: scan 2s infinite;
+        }
+        
+        @keyframes scan {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+    </style>
 </head>
 <body class="bg-gray-900 text-white font-mono">
     <!-- Header -->
