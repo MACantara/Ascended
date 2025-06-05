@@ -1,0 +1,20 @@
+{
+  "name": "ascended-game",
+  "version": "1.0.0",
+  "description": "Interactive cyberpunk puzzle game with multiple technical challenges",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'Static site - no build needed'",
+    "dev": "python -m http.server 8000",
+    "preview": "python -m http.server 8000"
+  },
+  "keywords": [
+    "game",
+    "puzzle",
+    "cyberpunk",
+    "programming",
+    "challenges"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
