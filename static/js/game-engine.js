@@ -60,23 +60,70 @@ class GameEngine {
 
         this.currentRoom = roomId;
         this.saveGameState();
-    }
-
-    navigateToChallenge(challengeType) {
+    }    navigateToChallenge(challengeType) {
         // Save current state before navigation
         this.saveGameState();
         // Navigate to the dedicated challenge page
         const challengePages = {
             'coding': 'challenges/coding/fix-the-array-length-function.html',
             'networking': 'challenges/networking/build-the-network-topology-challenge.html',
-            'security': 'challenges/security/security-challenge.html',
+            'security-cipher': 'challenges/security/cipher-decoder.html',
+            'security-threats': 'challenges/security/threat-detection.html',
             'hardware': 'challenges/hardware/system-diagnostics-and-repair.html',
             'ai': 'challenges/ai/ai-challenge.html'
         };
         
+        // Handle security challenges - show selection menu
+        if (challengeType === 'security') {
+            this.showSecurityChallengeMenu();
+            return;
+        }
+        
         if (challengePages[challengeType]) {
             window.location.href = challengePages[challengeType];
         }
+    }
+
+    showSecurityChallengeMenu() {
+        // Create a modal or overlay to choose between cipher decoder and threat detection
+        const overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        overlay.innerHTML = `
+            <div class="bg-gray-800 border border-red-600 rounded-lg p-6 max-w-md w-full mx-4">
+                <h3 class="text-xl font-bold text-red-400 mb-4">
+                    <i class="bi bi-shield-lock"></i> Security Console
+                </h3>
+                <p class="text-gray-300 mb-6">Choose your security challenge:</p>
+                
+                <div class="space-y-3">
+                    <button onclick="window.game.navigateToSecurityChallenge('security-cipher')" 
+                            class="w-full bg-red-600 hover:bg-red-700 p-3 rounded text-left">
+                        <i class="bi bi-key mr-2"></i> Cipher Decoder
+                        <div class="text-sm text-gray-300">Decrypt intercepted messages</div>
+                    </button>
+                    
+                    <button onclick="window.game.navigateToSecurityChallenge('security-threats')" 
+                            class="w-full bg-red-600 hover:bg-red-700 p-3 rounded text-left">
+                        <i class="bi bi-bug mr-2"></i> Threat Detection
+                        <div class="text-sm text-gray-300">Identify security vulnerabilities</div>
+                    </button>
+                </div>
+                
+                <button onclick="this.parentElement.parentElement.remove()" 
+                        class="mt-4 w-full bg-gray-600 hover:bg-gray-700 p-2 rounded">
+                    Cancel
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(overlay);
+    }
+
+    navigateToSecurityChallenge(challengeType) {
+        // Remove the overlay
+        document.querySelector('.fixed.inset-0').remove();
+        // Navigate to the specific security challenge
+        this.navigateToChallenge(challengeType);
     }
 
     togglePanel(panelType) {

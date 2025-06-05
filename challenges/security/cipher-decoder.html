@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cipher Decoder Challenge - Ascended</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body class="bg-gray-900 text-white font-mono">
+    <!-- Header -->
+    <header class="bg-gray-800 border-b border-cyan-500 p-4">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <button onclick="window.location.href='../../index.html'" 
+                        class="bg-gray-600 hover:bg-gray-700 px-3 py-2 rounded">
+                    <i class="bi bi-arrow-left"></i> Back to Lab
+                </button>
+                <h1 class="text-2xl font-bold text-red-400">
+                    <i class="bi bi-key"></i> Cipher Decoder
+                </h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="inventory-btn" class="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded">
+                    <i class="bi bi-bag"></i> Inventory
+                </button>
+                <button id="progress-btn" class="bg-green-600 hover:bg-green-700 px-3 py-2 rounded">
+                    <i class="bi bi-graph-up"></i> Progress
+                </button>
+                <button id="hint-btn" class="bg-yellow-600 hover:bg-yellow-700 px-3 py-2 rounded">
+                    <i class="bi bi-lightbulb"></i> Hints
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Challenge Area -->
+    <div class="flex h-screen">
+        <!-- Challenge Content -->
+        <div id="challenge-container" class="flex-1 p-6">
+            <div id="challenge-content">
+                <!-- Dynamic challenge content will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Side Panel -->
+        <div id="side-panel" class="w-80 bg-gray-800 border-l border-gray-600 p-4 hidden">
+            <!-- Dynamic content based on selected panel -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../static/js/inventory.js"></script>
+    <script src="../../static/js/progress.js"></script>
+    <script src="../../static/js/hints.js"></script>
+    <script src="../../static/js/challenges/security/cipher-decoder-challenge.js"></script>
+    <script>
+        // Initialize challenge when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const titleElement = { textContent: '' };
+            const contentElement = document.getElementById('challenge-content');
+            
+            CipherDecoderChallenge.load(titleElement, contentElement);
+            
+            // Setup panel toggles
+            document.getElementById('inventory-btn').addEventListener('click', () => {
+                togglePanel('inventory');
+            });
+            document.getElementById('progress-btn').addEventListener('click', () => {
+                togglePanel('progress');
+            });
+            document.getElementById('hint-btn').addEventListener('click', () => {
+                togglePanel('hints');
+            });
+        });
+
+        function togglePanel(panelType) {
+            const sidePanel = document.getElementById('side-panel');
+            const currentPanel = sidePanel.dataset.panel;
+
+            if (currentPanel === panelType && !sidePanel.classList.contains('hidden')) {
+                sidePanel.classList.add('hidden');
+                return;
+            }
+
+            sidePanel.dataset.panel = panelType;
+            sidePanel.classList.remove('hidden');
+
+            switch(panelType) {
+                case 'inventory':
+                    Inventory.render(sidePanel);
+                    break;
+                case 'progress':
+                    Progress.render(sidePanel);
+                    break;
+                case 'hints':
+                    Hints.render(sidePanel);
+                    break;
+            }
+        }
+
+        // Mock game object for challenge completion
+        window.game = {
+            completeChallenge: (challengeType, reward) => {
+                Progress.addCompletion(challengeType);
+                if (reward.item) {
+                    Inventory.addItem(reward.item);
+                }
+                
+                // Show completion message and redirect
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-green-600 text-white p-4 rounded shadow-lg z-50';
+                notification.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="bi bi-check-circle mr-2"></i>
+                        <div>
+                            <div class="font-bold">Challenge Complete!</div>
+                            <div class="text-sm">${reward.message}</div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    window.location.href = '../../index.html';
+                }, 3000);
+            }
+        };
+    </script>
+</body>
+</html>
