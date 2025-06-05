@@ -128,10 +128,6 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/core/rooms.js') }}"></script>
-<script src="{{ url_for('static', filename='js/core/challenges.js') }}"></script>
-<script src="{{ url_for('static', filename='js/core/inventory.js') }}"></script>
-<script src="{{ url_for('static', filename='js/core/progress.js') }}"></script>
 <script src="{{ url_for('static', filename='js/challenges/coding.js') }}"></script>
 <script>
     // Game-specific functionality
@@ -320,22 +316,39 @@
         }
     }
 
-    // Initialize game interface when page loads
-    document.addEventListener('DOMContentLoaded', () => {
+    // Wait for core scripts to load before initializing
+    function initializeGame() {
+        console.log('Game page loading...');
+        
         // Check if all required classes are available
         if (typeof RoomManager === 'undefined' || 
             typeof ChallengeManager === 'undefined' || 
             typeof InventoryManager === 'undefined' || 
-            typeof ProgressManager === 'undefined') {
-            console.error('Required classes not loaded. Retrying in 1 second...');
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
-            return;
+            typeof ProgressManager === 'undefined' ||
+            typeof GameCore === 'undefined') {
+            console.error('Required classes not loaded yet...');
+            return false;
         }
         
         window.game = new GameCore();
         window.gameInterface = new GameInterface();
-    });
+        
+        return true;
+    }
+
+    // Initialize when core scripts are loaded
+    if (window.coreScriptsLoaded) {
+        // Scripts already loaded
+        document.addEventListener('DOMContentLoaded', initializeGame);
+    } else {
+        // Wait for scripts to load
+        window.addEventListener('coreScriptsLoaded', () => {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeGame);
+            } else {
+                initializeGame();
+            }
+        });
+    }
 </script>
 {% endblock %}

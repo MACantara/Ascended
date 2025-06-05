@@ -44,9 +44,58 @@
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/core/game.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/core/inventory.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/core/progress.js') }}"></script>
+    <!-- Load core scripts once in base template -->
+    <script>
+        // Prevent duplicate script loading
+        if (!window.coreScriptsLoaded) {
+            window.coreScriptsLoaded = true;
+            
+            // Load scripts in order
+            const scripts = [
+                "{{ url_for('static', filename='js/core/rooms.js') }}",
+                "{{ url_for('static', filename='js/core/challenges.js') }}",
+                "{{ url_for('static', filename='js/core/inventory.js') }}",
+                "{{ url_for('static', filename='js/core/progress.js') }}",
+                "{{ url_for('static', filename='js/core/game.js') }}"
+            ];
+            
+            function loadScript(src) {
+                return new Promise((resolve, reject) => {
+                    if (document.querySelector(`script[src="${src}"]`)) {
+                        resolve(); // Already loaded
+                        return;
+                    }
+                    
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
+            }
+            
+            async function loadAllScripts() {
+                try {
+                    for (const src of scripts) {
+                        await loadScript(src);
+                    }
+                    console.log('All core scripts loaded successfully');
+                    
+                    // Dispatch event when all scripts are loaded
+                    window.dispatchEvent(new CustomEvent('coreScriptsLoaded'));
+                } catch (error) {
+                    console.error('Failed to load scripts:', error);
+                }
+            }
+            
+            loadAllScripts();
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+    </script>
+    
     {% block scripts %}{% endblock %}
 </body>
 </html>

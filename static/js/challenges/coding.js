@@ -17,9 +17,11 @@ class CodingChallenge {
     }
 
     init() {
-        this.render();
-        this.setupGameMechanics();
-        this.startStoryNarration();
+        // Don't setup immediately, wait for DOM to be ready
+        setTimeout(() => {
+            this.setupGameMechanics();
+            this.startStoryNarration();
+        }, 100);
     }
 
     render() {
@@ -163,12 +165,24 @@ class CodingChallenge {
     }
 
     setupDragAndDrop() {
-        const programArea = document.getElementById('program-area');
-        const commandBlocks = document.querySelectorAll('.command-block');
+        const solutionArea = document.getElementById('solution-area');
+        const codeBlocks = document.querySelectorAll('.code-block');
 
-        commandBlocks.forEach(block => {
+        if (!solutionArea) {
+            console.warn('Solution area not found, retrying...');
+            setTimeout(() => this.setupDragAndDrop(), 100);
+            return;
+        }
+
+        if (!codeBlocks.length) {
+            console.warn('Code blocks not found, retrying...');
+            setTimeout(() => this.setupDragAndDrop(), 100);
+            return;
+        }
+
+        codeBlocks.forEach(block => {
             block.addEventListener('dragstart', (e) => {
-                e.dataTransfer.setData('text/plain', e.target.dataset.command);
+                e.dataTransfer.setData('text/plain', e.target.dataset.block);
                 e.target.style.opacity = '0.5';
             });
 
@@ -177,20 +191,20 @@ class CodingChallenge {
             });
         });
 
-        programArea.addEventListener('dragover', (e) => {
+        solutionArea.addEventListener('dragover', (e) => {
             e.preventDefault();
-            programArea.classList.add('border-blue-400', 'bg-gray-750');
+            solutionArea.classList.add('border-blue-400', 'bg-gray-750');
         });
 
-        programArea.addEventListener('dragleave', () => {
-            programArea.classList.remove('border-blue-400', 'bg-gray-750');
+        solutionArea.addEventListener('dragleave', () => {
+            solutionArea.classList.remove('border-blue-400', 'bg-gray-750');
         });
 
-        programArea.addEventListener('drop', (e) => {
+        solutionArea.addEventListener('drop', (e) => {
             e.preventDefault();
-            const commandId = e.dataTransfer.getData('text/plain');
-            this.addCommandToProgram(commandId);
-            programArea.classList.remove('border-blue-400', 'bg-gray-750');
+            const blockIndex = e.dataTransfer.getData('text/plain');
+            this.addCommandToProgram(parseInt(blockIndex), this.data);
+            solutionArea.classList.remove('border-blue-400', 'bg-gray-750');
         });
     }
 
