@@ -280,6 +280,93 @@ class DataPreparation {
         document.getElementById('accuracy-display').textContent = accuracy >= 0 ? `${accuracy}%` : '-';
     }
 
+    static updateFeatureAnalysis() {
+        const classifiedCount = Object.keys(this.userClassifications).length;
+        
+        if (classifiedCount < 3) {
+            // Not enough data for meaningful analysis
+            return;
+        }
+
+        // Calculate basic feature statistics
+        const extensionCounts = {};
+        const sizeCounts = { small: 0, medium: 0, large: 0, xlarge: 0 };
+        const typeCounts = { image: 0, document: 0, audio: 0, video: 0 };
+
+        Object.entries(this.userClassifications).forEach(([fileIndex, category]) => {
+            const file = this.trainingData[fileIndex];
+            
+            // Count extensions
+            extensionCounts[file.extension] = (extensionCounts[file.extension] || 0) + 1;
+            
+            // Count size categories
+            const sizeCategory = this.getSizeCategory(file.size).toLowerCase();
+            if (sizeCounts.hasOwnProperty(sizeCategory)) {
+                sizeCounts[sizeCategory]++;
+            }
+            
+            // Count type classifications
+            typeCounts[category]++;
+        });
+
+        // Update the feature analysis display
+        const analysisDiv = document.getElementById('feature-analysis');
+        
+        if (analysisDiv) {
+            analysisDiv.innerHTML = `
+                <div class="space-y-3">
+                    <div class="flex items-center mb-2">
+                        <i class="bi bi-graph-up mr-2 text-green-400"></i>
+                        <span class="font-bold">Feature Analysis</span>
+                        <span class="ml-auto text-xs text-gray-400">${classifiedCount} samples</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div class="bg-gray-700 p-3 rounded">
+                            <div class="text-blue-400 font-semibold mb-2">File Types</div>
+                            ${Object.entries(typeCounts).map(([type, count]) => 
+                                count > 0 ? `<div class="flex justify-between">
+                                    <span class="capitalize">${type}:</span>
+                                    <span class="text-${this.getCategoryColor(type)}-400">${count}</span>
+                                </div>` : ''
+                            ).filter(Boolean).join('')}
+                        </div>
+                        
+                        <div class="bg-gray-700 p-3 rounded">
+                            <div class="text-green-400 font-semibold mb-2">File Sizes</div>
+                            ${Object.entries(sizeCounts).map(([size, count]) => 
+                                count > 0 ? `<div class="flex justify-between">
+                                    <span class="capitalize">${size}:</span>
+                                    <span class="text-gray-300">${count}</span>
+                                </div>` : ''
+                            ).filter(Boolean).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-700 p-3 rounded">
+                        <div class="text-purple-400 font-semibold mb-2">Top Extensions</div>
+                        <div class="text-xs space-y-1">
+                            ${Object.entries(extensionCounts)
+                                .sort(([,a], [,b]) => b - a)
+                                .slice(0, 4)
+                                .map(([ext, count]) => `
+                                    <div class="flex justify-between">
+                                        <span>.${ext}</span>
+                                        <span class="text-purple-300">${count} files</span>
+                                    </div>
+                                `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="text-xs text-gray-400">
+                        <i class="bi bi-info-circle mr-1"></i>
+                        AI will use these patterns to learn file classification
+                    </div>
+                </div>
+            `;
+        }
+    }
+
     static calculateCurrentAccuracy() {
         if (Object.keys(this.userClassifications).length === 0) return -1;
         
@@ -532,7 +619,8 @@ class DataPreparation {
     }
 
     static getValidationScore() {
-        return this.calculateCurrentAccuracy();
+        const accuracy = this.calculateCurrentAccuracy();
+        return accuracy >= 0 ? accuracy : 0;
     }
 
     static getFeatureMatrix() {
