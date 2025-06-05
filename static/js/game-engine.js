@@ -65,10 +65,9 @@ class GameEngine {
     navigateToChallenge(challengeType) {
         // Save current state before navigation
         this.saveGameState();
-        
         // Navigate to the dedicated challenge page
         const challengePages = {
-            'coding': 'challenges/coding/coding-challenge.html',
+            'coding': 'challenges/coding/fix-the-array-length-function.html',
             'networking': 'challenges/networking/build-the-network-topology-challenge.html',
             'security': 'challenges/security/security-challenge.html',
             'hardware': 'challenges/hardware/hardware-challenge.html',
