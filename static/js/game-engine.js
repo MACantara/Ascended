@@ -70,7 +70,7 @@ class GameEngine {
             'coding': 'challenges/coding/fix-the-array-length-function.html',
             'networking': 'challenges/networking/build-the-network-topology-challenge.html',
             'security': 'challenges/security/security-challenge.html',
-            'hardware': 'challenges/hardware/hardware-challenge.html',
+            'hardware': 'challenges/hardware/system-diagnostics-and-repair.html',
             'ai': 'challenges/ai/ai-challenge.html'
         };
         
