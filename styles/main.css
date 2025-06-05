@@ -1,0 +1,109 @@
+/* Custom Game Styles */
+.room {
+    display: none;
+}
+
+.room.active {
+    display: block;
+}
+
+.interactable {
+    transition: all 0.3s ease;
+}
+
+.interactable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 255, 255, 0.3);
+}
+
+.room-btn {
+    @apply px-3 py-2 rounded bg-gray-700 text-gray-400 hover:bg-gray-600 hover:text-white transition-all;
+}
+
+.room-btn.active {
+    @apply bg-cyan-600 text-white;
+}
+
+.room-btn:disabled {
+    @apply bg-gray-800 text-gray-600 cursor-not-allowed;
+}
+
+/* Challenge Styles */
+.puzzle-container {
+    @apply bg-gray-900 p-4 rounded border;
+}
+
+.drag-drop-area {
+    @apply border-2 border-dashed border-gray-600 p-4 rounded min-h-[100px] transition-all;
+}
+
+.drag-drop-area.hover {
+    @apply border-cyan-400 bg-gray-800;
+}
+
+.draggable {
+    @apply bg-blue-600 text-white p-2 rounded cursor-move select-none;
+}
+
+.draggable:hover {
+    @apply bg-blue-500;
+}
+
+/* Terminal Styles */
+.terminal {
+    @apply bg-black text-green-400 p-4 rounded font-mono text-sm;
+}
+
+.terminal-input {
+    @apply bg-transparent border-none outline-none text-green-400 font-mono;
+}
+
+/* Progress Indicators */
+.progress-bar {
+    @apply w-full bg-gray-700 rounded-full h-2;
+}
+
+.progress-fill {
+    @apply bg-gradient-to-r from-cyan-500 to-blue-500 h-2 rounded-full transition-all duration-300;
+}
+
+/* Inventory Styles */
+.inventory-grid {
+    @apply grid grid-cols-4 gap-2;
+}
+
+.inventory-slot {
+    @apply w-16 h-16 bg-gray-700 border border-gray-600 rounded flex items-center justify-center cursor-pointer hover:border-cyan-400;
+}
+
+.inventory-item {
+    @apply text-2xl;
+}
+
+/* Badge Styles */
+.badge {
+    @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-bronze { @apply bg-orange-600 text-orange-100; }
+.badge-silver { @apply bg-gray-400 text-gray-900; }
+.badge-gold { @apply bg-yellow-500 text-yellow-900; }
+
+/* Animation Classes */
+.pulse-glow {
+    animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 255, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.8); }
+}
+
+.slide-in {
+    animation: slide-in 0.3s ease-out;
+}
+
+@keyframes slide-in {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
