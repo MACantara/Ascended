@@ -128,7 +128,10 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="{{ url_for('static', filename='js/core/rooms.js') }}"></script>
 <script src="{{ url_for('static', filename='js/core/challenges.js') }}"></script>
+<script src="{{ url_for('static', filename='js/core/inventory.js') }}"></script>
+<script src="{{ url_for('static', filename='js/core/progress.js') }}"></script>
 <script src="{{ url_for('static', filename='js/challenges/coding.js') }}"></script>
 <script>
     // Game-specific functionality
@@ -290,11 +293,47 @@
             `;
         }
 
-        // ...existing code...
+        renderGenericChallenge(challengeData) {
+            return `
+                <div class="text-center py-12">
+                    <h3 class="text-xl font-bold mb-4">${challengeData.title}</h3>
+                    <p class="text-gray-400 mb-6">${challengeData.problem || challengeData.description}</p>
+                    <div class="bg-gray-700 p-4 rounded">
+                        <p class="text-sm">This challenge type is not yet implemented.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        showErrorMessage(message) {
+            const contentArea = document.getElementById('challenge-content');
+            contentArea.innerHTML = `
+                <div class="text-center py-20">
+                    <i class="bi bi-exclamation-circle text-6xl text-red-400 mb-4"></i>
+                    <h2 class="text-2xl font-bold mb-4">Error</h2>
+                    <p class="text-gray-400 mb-6">${message}</p>
+                    <button onclick="window.location.reload()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded font-bold">
+                        <i class="bi bi-arrow-clockwise"></i> Retry
+                    </button>
+                </div>
+            `;
+        }
     }
 
     // Initialize game interface when page loads
     document.addEventListener('DOMContentLoaded', () => {
+        // Check if all required classes are available
+        if (typeof RoomManager === 'undefined' || 
+            typeof ChallengeManager === 'undefined' || 
+            typeof InventoryManager === 'undefined' || 
+            typeof ProgressManager === 'undefined') {
+            console.error('Required classes not loaded. Retrying in 1 second...');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+            return;
+        }
+        
         window.game = new GameCore();
         window.gameInterface = new GameInterface();
     });
