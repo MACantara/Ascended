@@ -68,11 +68,11 @@ class GameEngine {
         
         // Navigate to the dedicated challenge page
         const challengePages = {
-            'coding': 'challenges/coding-challenge.html',
-            'networking': 'challenges/networking-challenge.html',
-            'security': 'challenges/security-challenge.html',
-            'hardware': 'challenges/hardware-challenge.html',
-            'ai': 'challenges/ai-challenge.html'
+            'coding': 'challenges/coding/coding-challenge.html',
+            'networking': 'challenges/networking/networking-challenge.html',
+            'security': 'challenges/security/security-challenge.html',
+            'hardware': 'challenges/hardware/hardware-challenge.html',
+            'ai': 'challenges/ai/ai-challenge.html'
         };
         
         if (challengePages[challengeType]) {
