@@ -46,11 +46,16 @@
 
     <!-- Load core scripts once in base template -->
     <script>
-        // Prevent duplicate script loading
-        if (!window.coreScriptsLoaded) {
-            window.coreScriptsLoaded = true;
-            
-            // Load scripts in order
+        // Initialize script loading state
+        window.coreScriptsLoaded = false;
+        window.scriptsLoadingPromise = null;
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+        
+        // Enhanced script loading with better error handling and state management
+        if (!window.scriptsLoadingPromise) {
             const scripts = [
                 "{{ url_for('static', filename='js/core/rooms.js') }}",
                 "{{ url_for('static', filename='js/core/challenges.js') }}",
@@ -61,38 +66,61 @@
             
             function loadScript(src) {
                 return new Promise((resolve, reject) => {
+                    // Check if script is already loaded
                     if (document.querySelector(`script[src="${src}"]`)) {
-                        resolve(); // Already loaded
+                        console.log(`Script already loaded: ${src}`);
+                        resolve();
                         return;
                     }
                     
+                    console.log(`Loading script: ${src}`);
                     const script = document.createElement('script');
                     script.src = src;
-                    script.onload = resolve;
-                    script.onerror = reject;
+                    script.onload = () => {
+                        console.log(`Script loaded successfully: ${src}`);
+                        resolve();
+                    };
+                    script.onerror = () => {
+                        console.error(`Failed to load script: ${src}`);
+                        reject(new Error(`Failed to load ${src}`));
+                    };
                     document.head.appendChild(script);
                 });
             }
             
-            async function loadAllScripts() {
+            window.scriptsLoadingPromise = (async () => {
                 try {
+                    console.log('Starting to load core scripts...');
                     for (const src of scripts) {
                         await loadScript(src);
                     }
-                    console.log('All core scripts loaded successfully');
                     
-                    // Dispatch event when all scripts are loaded
+                    // Verify all classes are actually available
+                    const requiredClasses = ['RoomManager', 'ChallengeManager', 'InventoryManager', 'ProgressManager', 'GameCore'];
+                    const missingClasses = requiredClasses.filter(className => typeof window[className] === 'undefined');
+                    
+                    if (missingClasses.length > 0) {
+                        throw new Error(`Missing classes: ${missingClasses.join(', ')}`);
+                    }
+                    
+                    console.log('All core scripts and classes loaded successfully');
+                    window.coreScriptsLoaded = true;
+                    
+                    // Dispatch event when all scripts are truly loaded
                     window.dispatchEvent(new CustomEvent('coreScriptsLoaded'));
+                    
                 } catch (error) {
-                    console.error('Failed to load scripts:', error);
+                    console.error('Failed to load core scripts:', error);
+                    window.coreScriptsLoaded = false;
+                    
+                    // Retry after a delay
+                    setTimeout(() => {
+                        console.log('Retrying script loading...');
+                        window.scriptsLoadingPromise = null;
+                        window.location.reload();
+                    }, 2000);
                 }
-            }
-            
-            loadAllScripts();
-        }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
+            })();
         }
     </script>
     

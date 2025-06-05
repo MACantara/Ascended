@@ -316,39 +316,65 @@
         }
     }
 
-    // Wait for core scripts to load before initializing
-    function initializeGame() {
-        console.log('Game page loading...');
+    // Enhanced initialization with better timing
+    async function initializeGame() {
+        console.log('Game page initializing...');
         
-        // Check if all required classes are available
-        if (typeof RoomManager === 'undefined' || 
-            typeof ChallengeManager === 'undefined' || 
-            typeof InventoryManager === 'undefined' || 
-            typeof ProgressManager === 'undefined' ||
-            typeof GameCore === 'undefined') {
-            console.error('Required classes not loaded yet...');
+        // Wait for core scripts to load if they haven't already
+        if (!window.coreScriptsLoaded && window.scriptsLoadingPromise) {
+            console.log('Waiting for core scripts to load...');
+            try {
+                await window.scriptsLoadingPromise;
+            } catch (error) {
+                console.error('Failed to load core scripts:', error);
+                return false;
+            }
+        }
+        
+        // Double-check that all required classes are available
+        const requiredClasses = ['RoomManager', 'ChallengeManager', 'InventoryManager', 'ProgressManager', 'GameCore'];
+        const missingClasses = requiredClasses.filter(className => typeof window[className] === 'undefined');
+        
+        if (missingClasses.length > 0) {
+            console.error('Required classes still not loaded:', missingClasses);
+            // Show loading screen and retry
+            showLoadingMessage('Loading required components...');
+            setTimeout(() => window.location.reload(), 3000);
             return false;
         }
         
-        window.game = new GameCore();
-        window.gameInterface = new GameInterface();
+        console.log('All classes available, initializing game...');
         
-        return true;
+        try {
+            window.game = new GameCore();
+            window.gameInterface = new GameInterface();
+            console.log('Game initialized successfully');
+            return true;
+        } catch (error) {
+            console.error('Error initializing game:', error);
+            showErrorMessage('Failed to initialize game. Please refresh the page.');
+            return false;
+        }
     }
-
-    // Initialize when core scripts are loaded
-    if (window.coreScriptsLoaded) {
-        // Scripts already loaded
+    
+    function showLoadingMessage(message) {
+        const contentArea = document.getElementById('challenge-content');
+        if (contentArea) {
+            contentArea.innerHTML = `
+                <div class="text-center py-20">
+                    <i class="bi bi-hourglass-split text-6xl text-blue-400 mb-4 animate-spin"></i>
+                    <h2 class="text-2xl font-bold mb-4">${message}</h2>
+                    <p class="text-gray-400">Please wait...</p>
+                </div>
+            `;
+        }
+    }
+    
+    // Initialize when page is ready
+    if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initializeGame);
     } else {
-        // Wait for scripts to load
-        window.addEventListener('coreScriptsLoaded', () => {
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initializeGame);
-            } else {
-                initializeGame();
-            }
-        });
+        initializeGame();
     }
 </script>
 {% endblock %}
