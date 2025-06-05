@@ -1,0 +1,43 @@
+{
+  "id": "basic_loop",
+  "title": "Fix the Loop",
+  "type": "coding",
+  "difficulty": "Easy",
+  "problem": "Complete the for loop to print all numbers from 1 to 5",
+  "codeBlocks": [
+    "for (let i = 1;",
+    "i <= 5;",
+    "i++) {",
+    "console.log(i);",
+    "}",
+    "i < 5;",
+    "i--;",
+    "console.log('Hello');"
+  ],
+  "solution": [
+    "for (let i = 1;",
+    "i <= 5;", 
+    "i++) {",
+    "console.log(i);",
+    "}"
+  ],
+  "testCases": [
+    {
+      "input": "Loop execution",
+      "output": "1, 2, 3, 4, 5"
+    }
+  ],
+  "hints": [
+    "A for loop needs three parts: initialization, condition, and increment",
+    "The condition should check if i is less than or equal to 5",
+    "Use i++ to increment the counter"
+  ],
+  "feedback": {
+    "correct": "Excellent! You've successfully created a working for loop.",
+    "incorrect": "Not quite right. Check the loop condition and increment statement."
+  },
+  "reward": {
+    "tool": "debugger",
+    "points": 10
+  }
+}

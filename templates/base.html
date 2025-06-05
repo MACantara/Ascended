@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ascended Tech Lab{% endblock %}</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .game-room { transition: all 0.3s ease; }
+        .challenge-card { transform: translateY(0); transition: transform 0.2s ease; }
+        .challenge-card:hover { transform: translateY(-4px); }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-blue-400">
+                <i class="bi bi-cpu"></i> Ascended Tech Lab
+            </h1>
+            <div class="flex space-x-4">
+                <button id="inventory-btn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                    <i class="bi bi-briefcase"></i> Inventory
+                </button>
+                <button id="progress-btn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">
+                    <i class="bi bi-trophy"></i> Progress
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Modals -->
+    <div id="inventory-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-gray-800 rounded-lg p-6 max-w-md w-full">
+                <h3 class="text-xl font-bold mb-4">Inventory</h3>
+                <div id="inventory-items" class="space-y-2"></div>
+                <button class="mt-4 bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded" onclick="closeModal('inventory-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/core/game.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/core/inventory.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/core/progress.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
