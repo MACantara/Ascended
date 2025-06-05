@@ -18,6 +18,10 @@ app.register_blueprint(progress_routes.bp)
 def index():
     return render_template('index.html')
 
+@app.route('/lab')
+def lab():
+    return render_template('lab.html')
+
 @app.route('/game')
 def game():
     return render_template('game.html')
