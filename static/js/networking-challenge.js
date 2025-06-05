@@ -4,6 +4,8 @@ class NetworkingChallenge {
     static selectedCable = null;
     static draggedConnection = null;
     static animationCanvas = null;
+    static draggedDevice = null;
+    static dragOffset = { x: 0, y: 0 };
 
     static load(titleElement, contentElement) {
         titleElement.textContent = "Network Configuration Lab";
@@ -18,6 +20,7 @@ class NetworkingChallenge {
                     <h4 class="text-lg font-bold mb-2">Build the Network Topology</h4>
                     <p class="text-gray-300 mb-4">
                         Select a cable type, then click and drag between device ports to create connections.
+                        <span class="text-cyan-400">💡 Tip: Drag devices to rearrange the network layout!</span>
                     </p>
                 </div>
 
@@ -56,9 +59,13 @@ class NetworkingChallenge {
                                     class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 px-6 py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200">
                                 <i class="bi bi-wifi mr-2"></i> Test Network
                             </button>
+                            <button onclick="NetworkingChallenge.resetTopology()" 
+                                    class="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 px-6 py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200">
+                                <i class="bi bi-arrows-move mr-2"></i> Reset Layout
+                            </button>
                             <button onclick="NetworkingChallenge.resetNetwork()" 
                                     class="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 px-6 py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200">
-                                <i class="bi bi-arrow-clockwise mr-2"></i> Reset
+                                <i class="bi bi-arrow-clockwise mr-2"></i> Reset All
                             </button>
                         </div>
                     </div>
@@ -163,18 +170,18 @@ class NetworkingChallenge {
         ];
 
         return devices.map(device => `
-            <div class="network-device absolute bg-gradient-to-br from-gray-700 to-gray-800 border-2 border-gray-500 rounded-xl p-3 text-center shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105" 
+            <div class="network-device absolute bg-gradient-to-br from-gray-700 to-gray-800 border-2 border-gray-500 rounded-xl p-3 text-center shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-grab active:cursor-grabbing" 
                  style="left: ${device.x}px; top: ${device.y}px; width: 90px;"
                  data-device="${device.id}">
-                <div class="device-icon text-3xl mb-1 filter drop-shadow-lg">${device.icon}</div>
-                <div class="text-xs font-bold text-cyan-300">${device.name}</div>
+                <div class="device-icon text-3xl mb-1 filter drop-shadow-lg pointer-events-none">${device.icon}</div>
+                <div class="text-xs font-bold text-cyan-300 pointer-events-none">${device.name}</div>
                 <div class="ports relative">
                     ${device.ports.map(port => `
                         <div class="port-container absolute" style="left: ${port.x}px; top: ${port.y}px;">
                             <div class="network-port w-6 h-6 bg-gradient-to-br from-gray-600 to-gray-700 border-2 border-gray-400 rounded-lg cursor-pointer hover:border-cyan-400 hover:shadow-lg transform hover:scale-110 transition-all duration-200 flex items-center justify-center"
                                  data-device="${device.id}" data-port="${port.id}" 
                                  title="${device.name} - ${port.name}">
-                                <div class="port-indicator w-2 h-2 bg-gray-500 rounded-full"></div>
+                                <div class="port-indicator w-2 h-2 bg-gray-500 rounded-full pointer-events-none"></div>
                             </div>
                         </div>
                     `).join('')}
@@ -208,6 +215,62 @@ class NetworkingChallenge {
             });
         });
 
+        // Device dragging functionality
+        document.querySelectorAll('.network-device').forEach(device => {
+            let isDragging = false;
+            let startX, startY, initialX, initialY;
+
+            device.addEventListener('mousedown', (e) => {
+                // Only allow dragging on the device body, not ports
+                if (e.target.closest('.network-port')) {
+                    return;
+                }
+
+                isDragging = true;
+                device.classList.add('dragging');
+                
+                const rect = device.getBoundingClientRect();
+                const canvasRect = document.getElementById('network-canvas').getBoundingClientRect();
+                
+                startX = e.clientX;
+                startY = e.clientY;
+                initialX = rect.left - canvasRect.left;
+                initialY = rect.top - canvasRect.top;
+                
+                this.draggedDevice = device;
+                device.style.zIndex = '1000';
+                device.style.cursor = 'grabbing';
+                
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging && this.draggedDevice === device) {
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+                    
+                    const newX = Math.max(0, Math.min(initialX + deltaX, 500));
+                    const newY = Math.max(0, Math.min(initialY + deltaY, 300));
+                    
+                    device.style.left = newX + 'px';
+                    device.style.top = newY + 'px';
+                    
+                    // Update all connections for this device
+                    this.updateDeviceConnections(device.dataset.device);
+                }
+            });
+
+            document.addEventListener('mouseup', (e) => {
+                if (isDragging && this.draggedDevice === device) {
+                    isDragging = false;
+                    device.classList.remove('dragging');
+                    device.style.zIndex = '';
+                    device.style.cursor = '';
+                    this.draggedDevice = null;
+                }
+            });
+        });
+
         // Port interactions
         document.querySelectorAll('.network-port').forEach(port => {
             port.addEventListener('mousedown', (e) => {
@@ -217,6 +280,7 @@ class NetworkingChallenge {
                 }
 
                 e.preventDefault();
+                e.stopPropagation(); // Prevent device dragging
                 isConnecting = true;
                 dragStart = {
                     device: port.dataset.device,
@@ -246,6 +310,7 @@ class NetworkingChallenge {
 
             port.addEventListener('mouseup', (e) => {
                 if (isConnecting && dragStart) {
+                    e.stopPropagation(); // Prevent device dragging
                     const endDevice = port.dataset.device;
                     const endPort = port.dataset.port;
 
@@ -456,10 +521,27 @@ class NetworkingChallenge {
         // Clear all visual connections
         document.querySelectorAll('.connection-line').forEach(line => line.remove());
         
+        // Reset device positions to original
+        const originalPositions = {
+            'router': { x: 320, y: 60 },
+            'switch': { x: 220, y: 160 },
+            'server': { x: 60, y: 260 },
+            'laptop1': { x: 280, y: 260 },
+            'laptop2': { x: 400, y: 260 }
+        };
+
+        document.querySelectorAll('.network-device').forEach(device => {
+            const deviceId = device.dataset.device;
+            if (originalPositions[deviceId]) {
+                device.style.left = originalPositions[deviceId].x + 'px';
+                device.style.top = originalPositions[deviceId].y + 'px';
+            }
+        });
+        
         // Reset all ports
         document.querySelectorAll('.network-port').forEach(port => {
             port.className = 'network-port w-6 h-6 bg-gradient-to-br from-gray-600 to-gray-700 border-2 border-gray-400 rounded-lg cursor-pointer hover:border-cyan-400 hover:shadow-lg transform hover:scale-110 transition-all duration-200 flex items-center justify-center';
-            port.querySelector('.port-indicator').className = 'port-indicator w-2 h-2 bg-gray-500 rounded-full';
+            port.querySelector('.port-indicator').className = 'port-indicator w-2 h-2 bg-gray-500 rounded-full pointer-events-none';
         });
         
         // Reset cable selection
@@ -481,6 +563,41 @@ class NetworkingChallenge {
             </div>
             <div class="text-gray-400 text-xs">Configure the network topology.</div>
         `;
+    }
+
+    static resetTopology() {
+        // Reset device positions only, keep connections
+        const originalPositions = {
+            'router': { x: 320, y: 60 },
+            'switch': { x: 220, y: 160 },
+            'server': { x: 60, y: 260 },
+            'laptop1': { x: 280, y: 260 },
+            'laptop2': { x: 400, y: 260 }
+        };
+
+        document.querySelectorAll('.network-device').forEach(device => {
+            const deviceId = device.dataset.device;
+            if (originalPositions[deviceId]) {
+                // Animate to original position
+                device.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                device.style.left = originalPositions[deviceId].x + 'px';
+                device.style.top = originalPositions[deviceId].y + 'px';
+                
+                // Remove transition after animation
+                setTimeout(() => {
+                    device.style.transition = '';
+                }, 500);
+            }
+        });
+
+        // Update all connections after devices move
+        setTimeout(() => {
+            this.connections.forEach(connection => {
+                this.updateDeviceConnections(connection.from.device);
+            });
+        }, 500);
+
+        this.showMessage('Network layout reset to default positions', 'info');
     }
 
     static showMessage(message, type) {
