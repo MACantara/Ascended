@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Laboratory Challenge</title>
+</head>
+<body>
+    <!-- Data Preparation Phase -->
+    <template id="ai-data-prep-template">
+        <div>
+            <h4 class="text-lg font-bold mb-2">Data Classification Task</h4>
+            <p class="text-gray-300 mb-4">
+                Sort the files into their correct categories. This training data will teach the AI to classify file types.
+            </p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                    <h5 class="font-bold mb-3">Unsorted Files</h5>
+                    <div id="unsorted-files" class="bg-gray-800 border border-gray-600 rounded p-4 min-h-[200px]">
+                        <!-- Files will be dynamically inserted here -->
+                    </div>
+                </div>
+
+                <div>
+                    <h5 class="font-bold mb-3">Categories</h5>
+                    <div class="space-y-3">
+                        <div class="category-box bg-gray-800 border-2 border-dashed border-gray-600 rounded p-4 min-h-[80px]" data-category="image">
+                            <h6 class="font-bold mb-2 capitalize text-blue-400">
+                                <i class="bi bi-image"></i> Image
+                            </h6>
+                            <div class="sorted-files space-y-1"></div>
+                        </div>
+                        <div class="category-box bg-gray-800 border-2 border-dashed border-gray-600 rounded p-4 min-h-[80px]" data-category="document">
+                            <h6 class="font-bold mb-2 capitalize text-green-400">
+                                <i class="bi bi-file-text"></i> Document
+                            </h6>
+                            <div class="sorted-files space-y-1"></div>
+                        </div>
+                        <div class="category-box bg-gray-800 border-2 border-dashed border-gray-600 rounded p-4 min-h-[80px]" data-category="audio">
+                            <h6 class="font-bold mb-2 capitalize text-purple-400">
+                                <i class="bi bi-music-note"></i> Audio
+                            </h6>
+                            <div class="sorted-files space-y-1"></div>
+                        </div>
+                        <div class="category-box bg-gray-800 border-2 border-dashed border-gray-600 rounded p-4 min-h-[80px]" data-category="video">
+                            <h6 class="font-bold mb-2 capitalize text-red-400">
+                                <i class="bi bi-camera-video"></i> Video
+                            </h6>
+                            <div class="sorted-files space-y-1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button onclick="AIChallenge.validateDataSorting()" 
+                        class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">
+                    <i class="bi bi-check-circle"></i> Validate Dataset
+                </button>
+            </div>
+
+            <div id="data-feedback" class="mt-4"></div>
+        </div>
+    </template>
+
+    <!-- Model Training Phase -->
+    <template id="ai-training-template">
+        <div>
+            <h4 class="text-lg font-bold mb-2">Train Classification Model</h4>
+            <p class="text-gray-300 mb-4">
+                Configure and train your machine learning model using the prepared dataset.
+            </p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                    <h5 class="font-bold mb-3">Model Configuration</h5>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Algorithm</label>
+                            <select id="algorithm" class="w-full bg-gray-700 border border-gray-600 rounded p-2">
+                                <option value="decision-tree">Decision Tree</option>
+                                <option value="neural-network">Neural Network</option>
+                                <option value="random-forest">Random Forest</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Learning Rate</label>
+                            <input type="range" id="learning-rate" min="0.01" max="1" step="0.01" value="0.1" 
+                                   class="w-full" oninput="AIChallenge.updateLearningRate()">
+                            <div class="flex justify-between text-xs text-gray-400">
+                                <span>0.01</span>
+                                <span id="lr-value">0.1</span>
+                                <span>1.0</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Training Epochs</label>
+                            <input type="number" id="epochs" min="10" max="1000" value="100" 
+                                   class="w-full bg-gray-700 border border-gray-600 rounded p-2">
+                        </div>
+
+                        <button onclick="AIChallenge.startTraining()" 
+                                class="w-full bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">
+                            <i class="bi bi-play-fill"></i> Start Training
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <h5 class="font-bold mb-3">Training Progress</h5>
+                    <div class="bg-gray-800 border border-gray-600 rounded p-4">
+                        <div id="training-status" class="mb-4">
+                            <div class="text-gray-400">Ready to train model...</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Progress</span>
+                                <span id="training-progress">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="training-bar" class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div id="training-metrics" class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>Accuracy:</span>
+                                <span id="accuracy">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Loss:</span>
+                                <span id="loss">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Epoch:</span>
+                                <span id="current-epoch">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Model Testing Phase -->
+    <template id="ai-testing-template">
+        <div>
+            <h4 class="text-lg font-bold mb-2">Test Your Model</h4>
+            <p class="text-gray-300 mb-4">
+                Use your trained model to classify new, unseen files.
+            </p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                    <h5 class="font-bold mb-3">Test Files</h5>
+                    <div class="space-y-3" id="test-files-container">
+                        <!-- Test files will be dynamically inserted here -->
+                    </div>
+
+                    <button onclick="AIChallenge.evaluateModel()" 
+                            class="w-full mt-4 bg-green-600 hover:bg-green-700 px-4 py-2 rounded">
+                        <i class="bi bi-check-circle"></i> Evaluate Model
+                    </button>
+                </div>
+
+                <div>
+                    <h5 class="font-bold mb-3">Model Performance</h5>
+                    <div id="model-results" class="bg-gray-800 border border-gray-600 rounded p-4">
+                        <div class="text-gray-400">Make classifications to see results...</div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h5 class="font-bold mb-3">Feature Analysis</h5>
+                        <div class="bg-gray-800 border border-gray-600 rounded p-4 text-sm">
+                            <div class="mb-2"><strong>Key Features:</strong></div>
+                            <ul class="text-gray-300 space-y-1">
+                                <li>• File extension (.jpg, .mp3, .pdf, etc.)</li>
+                                <li>• File size (images/videos typically larger)</li>
+                                <li>• Filename patterns</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</body>
+</html>

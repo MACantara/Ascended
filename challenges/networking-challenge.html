@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Configuration Challenge</title>
+</head>
+<body>
+    <template id="networking-challenge-template">
+        <div class="puzzle-container">
+            <div class="mb-4">
+                <h4 class="text-lg font-bold mb-2">Build the Network Topology</h4>
+                <p class="text-gray-300 mb-4">
+                    Connect the devices to create a functional network. 
+                    Drag cables between ports to establish connections.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div class="lg:col-span-2">
+                    <div id="network-canvas" class="bg-gray-900 border border-gray-600 rounded p-4 h-96 relative">
+                        <!-- Network devices will be dynamically inserted here -->
+                    </div>
+                    
+                    <div class="flex space-x-2 mt-4">
+                        <button onclick="NetworkingChallenge.checkConfiguration()" 
+                                class="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded">
+                            <i class="bi bi-check-circle"></i> Test Network
+                        </button>
+                        <button onclick="NetworkingChallenge.resetNetwork()" 
+                                class="bg-gray-600 hover:bg-gray-700 px-3 py-2 rounded">
+                            <i class="bi bi-arrow-clockwise"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <h5 class="font-bold mb-2">Available Cables</h5>
+                    <div id="cable-inventory" class="space-y-2 mb-4">
+                        <div class="cable-item bg-blue-600 p-2 rounded cursor-pointer" data-cable="ethernet">
+                            <i class="bi bi-ethernet"></i> Ethernet Cable
+                        </div>
+                        <div class="cable-item bg-green-600 p-2 rounded cursor-pointer" data-cable="fiber">
+                            <i class="bi bi-wifi"></i> Fiber Cable
+                        </div>
+                    </div>
+
+                    <h5 class="font-bold mb-2">Network Status</h5>
+                    <div id="network-status" class="bg-gray-800 p-3 rounded text-sm">
+                        <div class="text-yellow-400">⚠️ Network not configured</div>
+                        <div class="text-gray-400 mt-2">Connect all devices to test connectivity.</div>
+                    </div>
+
+                    <h5 class="font-bold mb-2 mt-4">Requirements</h5>
+                    <ul class="text-sm text-gray-400 space-y-1">
+                        <li>• Connect laptops to switch</li>
+                        <li>• Connect switch to router</li>
+                        <li>• Connect server to switch</li>
+                        <li>• Router provides internet access</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Network Device Template -->
+    <template id="network-device-template">
+        <div class="network-device absolute bg-gray-700 border border-gray-500 rounded p-2 text-center" 
+             style="width: 80px;" data-device="">
+            <div class="text-2xl mb-1 device-icon"><!-- Device icon --></div>
+            <div class="text-xs font-bold device-name"><!-- Device name --></div>
+            <div class="ports mt-1">
+                <!-- Ports will be dynamically inserted here -->
+            </div>
+        </div>
+    </template>
+
+    <!-- Port Template -->
+    <template id="port-template">
+        <div class="port w-3 h-3 bg-gray-600 border border-gray-400 rounded-full inline-block m-0.5 cursor-pointer"
+             data-device="" data-port="" style="position: relative;" title="">
+        </div>
+    </template>
+</body>
+</html>

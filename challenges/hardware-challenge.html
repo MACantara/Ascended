@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardware Diagnostics Challenge</title>
+</head>
+<body>
+    <template id="hardware-challenge-template">
+        <div class="puzzle-container">
+            <div class="mb-4">
+                <h4 class="text-lg font-bold mb-2">System Diagnostics & Repair</h4>
+                <p class="text-gray-300 mb-4">
+                    The computer won't boot properly. Diagnose and fix the hardware issues.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                    <h5 class="font-bold mb-3">Computer Motherboard</h5>
+                    <div id="motherboard" class="bg-gradient-to-br from-green-900 to-green-800 border-2 border-green-600 rounded-lg p-6 relative h-80">
+                        <!-- Dynamic motherboard components will be inserted here -->
+                    </div>
+                    
+                    <div class="mt-4 flex space-x-2">
+                        <button onclick="HardwareChallenge.powerOn()" 
+                                class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                            <i class="bi bi-power"></i> Power On
+                        </button>
+                        <button onclick="HardwareChallenge.runDiagnostics()" 
+                                class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded">
+                            <i class="bi bi-cpu"></i> Run Diagnostics
+                        </button>
+                        <button onclick="HardwareChallenge.resetSystem()" 
+                                class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded">
+                            <i class="bi bi-arrow-clockwise"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <h5 class="font-bold mb-3">Available Components</h5>
+                    <div id="component-shelf" class="bg-gray-800 border border-gray-600 rounded p-4 mb-4">
+                        <div class="spare-component bg-gray-700 border border-gray-500 p-3 rounded mb-2 cursor-move hover:bg-gray-600"
+                             draggable="true" data-component-type="ram" data-component-id="spare-ram">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-2">🧠</span>
+                                <span class="text-sm">RAM Module</span>
+                            </div>
+                        </div>
+                        <div class="spare-component bg-gray-700 border border-gray-500 p-3 rounded mb-2 cursor-move hover:bg-gray-600"
+                             draggable="true" data-component-type="storage" data-component-id="spare-ssd">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-2">💾</span>
+                                <span class="text-sm">SSD Drive</span>
+                            </div>
+                        </div>
+                        <div class="spare-component bg-gray-700 border border-gray-500 p-3 rounded mb-2 cursor-move hover:bg-gray-600"
+                             draggable="true" data-component-type="storage" data-component-id="spare-hdd">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-2">💿</span>
+                                <span class="text-sm">HDD Drive</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="font-bold mb-3">System Status</h5>
+                    <div id="system-console" class="terminal h-40 overflow-y-auto">
+                        <div class="text-gray-400">System ready for diagnostics...</div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h5 class="font-bold mb-2">Component Status</h5>
+                        <div id="component-status" class="space-y-1 text-sm">
+                            <!-- Dynamic component status will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Component Slot Template -->
+    <template id="component-slot-template">
+        <div class="component-slot absolute border-2 border-dashed border-gray-400 rounded w-12 h-8 flex items-center justify-center text-xs cursor-pointer hover:border-white"
+             data-slot="" data-component="" title="">
+            <!-- Component icon will be inserted here -->
+        </div>
+    </template>
+
+    <!-- Component Status Item Template -->
+    <template id="component-status-template">
+        <div class="flex justify-between items-center bg-gray-700 px-2 py-1 rounded">
+            <span class="component-name"><!-- Component name --></span>
+            <span class="component-status"><!-- Status --></span>
+        </div>
+    </template>
+</body>
+</html>

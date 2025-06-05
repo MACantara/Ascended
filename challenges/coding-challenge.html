@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Terminal Challenge</title>
+</head>
+<body>
+    <template id="coding-challenge-template">
+        <div class="puzzle-container">
+            <div class="mb-4">
+                <h4 class="text-lg font-bold mb-2" id="puzzle-title"><!-- Dynamic title --></h4>
+                <p class="text-gray-300 mb-4" id="puzzle-description"><!-- Dynamic description --></p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div>
+                    <h5 class="font-bold mb-2">Code Editor</h5>
+                    <textarea id="code-editor" 
+                              class="w-full h-40 bg-gray-900 text-green-400 font-mono text-sm p-3 rounded border border-gray-600 resize-none"
+                              placeholder="Enter your code here..."><!-- Dynamic code --></textarea>
+                    
+                    <div class="flex space-x-2 mt-2">
+                        <button onclick="CodingChallenge.runCode()" 
+                                class="bg-green-600 hover:bg-green-700 px-3 py-2 rounded">
+                            <i class="bi bi-play-fill"></i> Run Code
+                        </button>
+                        <button onclick="CodingChallenge.resetCode()" 
+                                class="bg-gray-600 hover:bg-gray-700 px-3 py-2 rounded">
+                            <i class="bi bi-arrow-clockwise"></i> Reset
+                        </button>
+                        <button onclick="CodingChallenge.checkSolution()" 
+                                class="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded">
+                            <i class="bi bi-check-circle"></i> Submit
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <h5 class="font-bold mb-2">Test Cases</h5>
+                    <div class="bg-gray-900 p-3 rounded border border-gray-600 h-40 overflow-y-auto">
+                        <div id="test-results">
+                            <!-- Dynamic test cases will be inserted here -->
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h5 class="font-bold mb-2">Console Output</h5>
+                        <div id="console-output" class="terminal h-20 overflow-y-auto">
+                            <div class="text-gray-400">Ready to run code...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Test Case Template -->
+    <template id="test-case-template">
+        <div class="mb-2 p-2 bg-gray-800 rounded">
+            <div class="text-sm">
+                <span class="text-blue-400">Input:</span> <span class="test-input"><!-- Dynamic input --></span><br>
+                <span class="text-green-400">Expected:</span> <span class="test-expected"><!-- Dynamic expected --></span>
+                <span class="test-result float-right">
+                    <i class="bi bi-circle text-gray-500"></i>
+                </span>
+            </div>
+        </div>
+    </template>
+</body>
+</html>
