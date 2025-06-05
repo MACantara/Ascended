@@ -1,7 +1,6 @@
 class GameEngine {
     constructor() {
         this.currentRoom = 'server-room';
-        this.challengeActive = false;
         this.init();
     }
 
@@ -22,17 +21,12 @@ class GameEngine {
             });
         });
 
-        // Challenge interactions
+        // Challenge interactions - navigate to dedicated pages
         document.querySelectorAll('.interactable').forEach(element => {
             element.addEventListener('click', (e) => {
                 const challengeType = e.currentTarget.dataset.challenge;
-                this.startChallenge(challengeType);
+                this.navigateToChallenge(challengeType);
             });
-        });
-
-        // Modal controls
-        document.getElementById('close-challenge').addEventListener('click', () => {
-            this.closeChallenge();
         });
 
         // Panel toggles
@@ -46,13 +40,6 @@ class GameEngine {
 
         document.getElementById('hint-btn').addEventListener('click', () => {
             this.togglePanel('hints');
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.challengeActive) {
-                this.closeChallenge();
-            }
         });
     }
 
@@ -75,37 +62,22 @@ class GameEngine {
         this.saveGameState();
     }
 
-    startChallenge(challengeType) {
-        this.challengeActive = true;
-        const modal = document.getElementById('challenge-modal');
-        const title = document.getElementById('challenge-title');
-        const content = document.getElementById('challenge-content');
-
-        // Load challenge based on type
-        switch(challengeType) {
-            case 'coding':
-                CodingChallenge.load(title, content);
-                break;
-            case 'networking':
-                NetworkingChallenge.load(title, content);
-                break;
-            case 'security':
-                SecurityChallenge.load(title, content);
-                break;
-            case 'hardware':
-                HardwareChallenge.load(title, content);
-                break;
-            case 'ai':
-                AIChallenge.load(title, content);
-                break;
+    navigateToChallenge(challengeType) {
+        // Save current state before navigation
+        this.saveGameState();
+        
+        // Navigate to the dedicated challenge page
+        const challengePages = {
+            'coding': 'challenges/coding-challenge.html',
+            'networking': 'challenges/networking-challenge.html',
+            'security': 'challenges/security-challenge.html',
+            'hardware': 'challenges/hardware-challenge.html',
+            'ai': 'challenges/ai-challenge.html'
+        };
+        
+        if (challengePages[challengeType]) {
+            window.location.href = challengePages[challengeType];
         }
-
-        modal.classList.remove('hidden');
-    }
-
-    closeChallenge() {
-        this.challengeActive = false;
-        document.getElementById('challenge-modal').classList.add('hidden');
     }
 
     togglePanel(panelType) {
@@ -142,7 +114,6 @@ class GameEngine {
             this.unlockRoom(reward.unlock);
         }
         this.saveGameState();
-        this.showCompletionMessage(reward);
     }
 
     unlockRoom(roomId) {
@@ -151,26 +122,6 @@ class GameEngine {
             roomBtn.disabled = false;
             roomBtn.classList.add('pulse-glow');
         }
-    }
-
-    showCompletionMessage(reward) {
-        // Create notification
-        const notification = document.createElement('div');
-        notification.className = 'fixed top-4 right-4 bg-green-600 text-white p-4 rounded shadow-lg z-50 slide-in';
-        notification.innerHTML = `
-            <div class="flex items-center">
-                <i class="bi bi-check-circle mr-2"></i>
-                <div>
-                    <div class="font-bold">Challenge Complete!</div>
-                    <div class="text-sm">${reward.message}</div>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            notification.remove();
-        }, 3000);
     }
 
     saveGameState() {
