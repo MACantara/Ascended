@@ -68,6 +68,7 @@
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/core/rooms.js') }}"></script>
+<script src="{{ url_for('static', filename='js/core/challenges.js') }}"></script>
 <script src="{{ url_for('static', filename='js/core/inventory.js') }}"></script>
 <script src="{{ url_for('static', filename='js/core/progress.js') }}"></script>
 <script>
@@ -80,7 +81,7 @@
         async init() {
             this.setupChallengeSelection();
             // Wait for game to initialize, then load rooms and update progress
-            if (window.game) {
+            if (window.game && window.game.roomManager) {
                 await this.loadRoomsForLab();
                 this.updateProgressSummary();
             }
@@ -157,6 +158,18 @@
     // Initialize lab interface when page loads
     document.addEventListener('DOMContentLoaded', async () => {
         console.log('Lab page loading...');
+        
+        // Check if all required classes are available
+        if (typeof RoomManager === 'undefined' || 
+            typeof ChallengeManager === 'undefined' || 
+            typeof InventoryManager === 'undefined' || 
+            typeof ProgressManager === 'undefined') {
+            console.error('Required classes not loaded. Retrying in 1 second...');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+            return;
+        }
         
         // Initialize game core first
         window.game = new GameCore();
